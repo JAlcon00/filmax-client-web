@@ -39,3 +39,15 @@ karma-results.json
 
 # Misc
 *.log
+
+# Duplicate/sync artifacts
+* 2
+* 2.*
+
+# Local secrets and critical files
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+secrets.*
