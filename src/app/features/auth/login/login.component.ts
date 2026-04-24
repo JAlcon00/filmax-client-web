@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { finalize } from 'rxjs';
+import { AuthService, LoginResponse } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +15,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.24),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.22),_transparent_32%)]"></div>
         <div class="relative max-w-xl">
           <span class="inline-flex items-center rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-sky-200">
-            FE-03 Login
+            FE-04 Login API
           </span>
           <h1 class="mt-5 text-4xl font-bold tracking-tight text-white sm:text-5xl">
             Bienvenido de vuelta
@@ -24,7 +27,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
           <ul class="mt-8 space-y-3 text-sm text-slate-300">
             <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-sky-400"></span> Validacion de correo electronico con formato correcto.</li>
             <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-sky-400"></span> Contrasena obligatoria con minimo 8 caracteres.</li>
-            <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-sky-400"></span> Mensajes de error claros por campo invalido.</li>
+            <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-sky-400"></span> Conexion directa al endpoint de autenticacion.</li>
           </ul>
         </div>
       </div>
@@ -64,13 +67,21 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
           <button
             type="submit"
             class="inline-flex w-full items-center justify-center rounded-2xl bg-sky-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
-            [disabled]="loginForm.invalid"
+            [disabled]="loginForm.invalid || isSubmitting"
           >
-            Iniciar sesion
+            {{ isSubmitting ? 'Validando credenciales...' : 'Iniciar sesion' }}
           </button>
 
-          <p *ngIf="submitted" class="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
-            Formulario de login valido. La conexion con API se implementa en FE-04.
+          <p *ngIf="errorMessage" class="rounded-2xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+            {{ errorMessage }}
+          </p>
+
+          <p *ngIf="successMessage" class="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+            {{ successMessage }}
+          </p>
+
+          <p *ngIf="tokenPreview" class="rounded-2xl border border-sky-400/30 bg-sky-400/10 px-4 py-3 text-xs text-sky-100 break-all">
+            Token recibido: {{ tokenPreview }}
           </p>
         </form>
       </div>
@@ -79,28 +90,101 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 })
 export class LoginComponent {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
 
   protected readonly loginForm = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
-  protected submitted = false;
+  protected isSubmitting = false;
+  protected successMessage = '';
+  protected errorMessage = '';
+  protected tokenPreview = '';
 
   protected onSubmit(): void {
     this.loginForm.markAllAsTouched();
 
     if (this.loginForm.invalid) {
-      this.submitted = false;
+      this.successMessage = '';
       return;
     }
 
-    this.submitted = true;
+    this.isSubmitting = true;
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.tokenPreview = '';
+
+    this.authService
+      .login(this.loginForm.getRawValue())
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: (response) => {
+          const token = this.extractToken(response);
+
+          if (!token) {
+            this.errorMessage = 'La respuesta del backend no incluye token de acceso.';
+            return;
+          }
+
+          this.successMessage = 'Credenciales validas. Token recibido correctamente.';
+          this.tokenPreview = this.maskToken(token);
+        },
+        error: (error: unknown) => {
+          this.errorMessage = this.resolveErrorMessage(error);
+        },
+      });
   }
 
   protected isInvalid(controlName: 'email' | 'password'): boolean {
     const control = this.loginForm.get(controlName);
 
     return Boolean(control && control.invalid && (control.dirty || control.touched));
+  }
+
+  private extractToken(response: LoginResponse): string {
+    return response.token ?? response.accessToken ?? response.jwt ?? '';
+  }
+
+  private maskToken(token: string): string {
+    if (token.length <= 14) {
+      return token;
+    }
+
+    return `${token.slice(0, 7)}...${token.slice(-7)}`;
+  }
+
+  private resolveErrorMessage(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return 'No se pudo iniciar sesion. Intenta de nuevo.';
+    }
+
+    const backendMessage = this.extractBackendMessage(error.error);
+
+    if (backendMessage) {
+      return backendMessage;
+    }
+
+    if (error.status === 0) {
+      return 'No hay conexion con el servidor. Verifica que el backend este activo.';
+    }
+
+    if (error.status === 401) {
+      return 'Credenciales invalidas. Verifica correo y contrasena.';
+    }
+
+    return 'No se pudo iniciar sesion. Revisa tus datos e intenta nuevamente.';
+  }
+
+  private extractBackendMessage(errorPayload: unknown): string | null {
+    if (!errorPayload || typeof errorPayload !== 'object') {
+      return null;
+    }
+
+    if ('message' in errorPayload && typeof errorPayload.message === 'string') {
+      return errorPayload.message;
+    }
+
+    return null;
   }
 }
