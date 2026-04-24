@@ -1,0 +1,50 @@
+:host {
+	display: block;
+}
+
+.fm-footer {
+	background-color: transparent;
+	padding: 0.85rem 1rem 1rem;
+}
+
+.fm-footer__inner {
+	margin: 0 auto;
+	max-width: 1200px;
+	text-align: center;
+}
+
+.fm-footer__nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.2rem;
+	justify-content: center;
+	margin-bottom: 0.35rem;
+}
+
+.fm-footer__nav a {
+	color: var(--color-text-primary);
+	font-size: 0.88rem;
+	font-weight: 800;
+	text-decoration: none;
+}
+
+.fm-footer__nav a:hover,
+.fm-footer__nav a:focus-visible {
+	color: var(--color-brand-hover);
+}
+
+.fm-footer__copy {
+	color: var(--color-text-secondary);
+	font-size: 0.9rem;
+	margin: 0;
+}
+
+@media (max-width: 640px) {
+	.fm-footer__nav {
+		gap: 0.8rem;
+	}
+
+	.fm-footer__nav a {
+		font-size: 0.8rem;
+	}
+}

@@ -1,0 +1,70 @@
+:host {
+  display: block;
+}
+
+.movie-list-wrap {
+  margin: 0 auto;
+  max-width: 1320px;
+  padding: 1.5rem 1rem 1.25rem;
+}
+
+.catalog-hero {
+  background: linear-gradient(180deg, rgba(255, 250, 240, 0.8) 0%, rgba(255, 244, 221, 0.92) 100%);
+  border: 1px solid rgba(212, 190, 145, 0.7);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 1rem;
+  padding: 1.25rem 1.2rem;
+}
+
+.catalog-hero__eyebrow {
+  color: var(--color-brand);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+}
+
+.catalog-hero h1 {
+  font-size: clamp(2.1rem, 4vw, 3.1rem);
+  line-height: 0.95;
+  margin: 0;
+}
+
+.catalog-hero__text {
+  color: var(--color-text-secondary);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  margin: 0.5rem 0 0;
+  max-width: 700px;
+}
+
+.movie-list-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+}
+
+@media (max-width: 640px) {
+  .movie-list-wrap {
+    padding: 1rem 0.85rem 0.85rem;
+  }
+
+  .catalog-hero {
+    padding: 1rem;
+  }
+
+  .catalog-hero h1 {
+    font-size: 1.95rem;
+  }
+
+  .catalog-hero__text {
+    font-size: 0.93rem;
+  }
+
+  .movie-list-grid {
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

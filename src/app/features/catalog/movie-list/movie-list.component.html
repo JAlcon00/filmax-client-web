@@ -1,0 +1,13 @@
+<section class="movie-list-wrap">
+  <header class="catalog-hero">
+    <p class="catalog-hero__eyebrow">Coleccion destacada</p>
+    <h1>Peliculas y series listas para descubrir</h1>
+    <p class="catalog-hero__text">
+      Explora un catalogo visual con tarjetas limpias, favoritos y una experiencia pensada para consumir rapido.
+    </p>
+  </header>
+
+  <div class="movie-list-grid">
+    <app-movie-card *ngFor="let movie of movies" [movie]="movie"></app-movie-card>
+  </div>
+</section>
