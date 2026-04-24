@@ -13,6 +13,18 @@ export interface RegisterResponse {
   message?: string;
 }
 
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token?: string;
+  accessToken?: string;
+  jwt?: string;
+  message?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -20,5 +32,9 @@ export class AuthService {
 
   register(payload: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.authUrl}/register`, payload);
+  }
+
+  login(payload: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.authUrl}/login`, payload);
   }
 }
