@@ -25,6 +25,8 @@ export interface LoginResponse {
   message?: string;
 }
 
+const AUTH_TOKEN_KEY = 'filmax_auth_token';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -36,5 +38,32 @@ export class AuthService {
 
   login(payload: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.authUrl}/login`, payload);
+  }
+
+  saveTokenFromLogin(response: LoginResponse): string {
+    const token = this.extractToken(response);
+
+    if (!token) {
+      return '';
+    }
+
+    sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+    return token;
+  }
+
+  getToken(): string {
+    return sessionStorage.getItem(AUTH_TOKEN_KEY) ?? '';
+  }
+
+  clearToken(): void {
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  }
+
+  isAuthenticated(): boolean {
+    return this.getToken().length > 0;
+  }
+
+  private extractToken(response: LoginResponse): string {
+    return response.token ?? response.accessToken ?? response.jwt ?? '';
   }
 }

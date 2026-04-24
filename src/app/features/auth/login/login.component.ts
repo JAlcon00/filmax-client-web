@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { AuthService, LoginResponse } from '../../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +15,7 @@ import { AuthService, LoginResponse } from '../../../core/services/auth.service'
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.24),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.22),_transparent_32%)]"></div>
         <div class="relative max-w-xl">
           <span class="inline-flex items-center rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-sky-200">
-            FE-04 Login API
+            FE-05 Sesion Token
           </span>
           <h1 class="mt-5 text-4xl font-bold tracking-tight text-white sm:text-5xl">
             Bienvenido de vuelta
@@ -27,7 +27,7 @@ import { AuthService, LoginResponse } from '../../../core/services/auth.service'
           <ul class="mt-8 space-y-3 text-sm text-slate-300">
             <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-sky-400"></span> Validacion de correo electronico con formato correcto.</li>
             <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-sky-400"></span> Contrasena obligatoria con minimo 8 caracteres.</li>
-            <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-sky-400"></span> Conexion directa al endpoint de autenticacion.</li>
+            <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-sky-400"></span> El token se guarda en sesion y se usa en solicitudes protegidas.</li>
           </ul>
         </div>
       </div>
@@ -120,7 +120,7 @@ export class LoginComponent {
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
         next: (response) => {
-          const token = this.extractToken(response);
+          const token = this.authService.saveTokenFromLogin(response);
 
           if (!token) {
             this.errorMessage = 'La respuesta del backend no incluye token de acceso.';
@@ -140,10 +140,6 @@ export class LoginComponent {
     const control = this.loginForm.get(controlName);
 
     return Boolean(control && control.invalid && (control.dirty || control.touched));
-  }
-
-  private extractToken(response: LoginResponse): string {
-    return response.token ?? response.accessToken ?? response.jwt ?? '';
   }
 
   private maskToken(token: string): string {
