@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Production
+dist/
+out/
+tmp/
+temp/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.history/
+
+# Angular
+.angular/
+.angular/cache/
+ng-build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage/
+karma-results.json
+
+# Caches
+.eslintcache
+.sass-cache/
+
+# Misc
+*.log
