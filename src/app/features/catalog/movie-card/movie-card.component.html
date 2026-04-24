@@ -1,0 +1,28 @@
+<article class="movie-card">
+  <button
+    class="movie-card__favorite"
+    type="button"
+    aria-label="Agregar a favoritos (pendiente)"
+    title="Favorito (pendiente)"
+  >
+    <i [class]="icons.heart" aria-hidden="true"></i>
+  </button>
+
+  <img [src]="movie.imageUrl" [alt]="movie.title" class="movie-card__poster" loading="lazy" />
+
+  <div class="movie-card__body">
+    <h3>{{ movie.title }}</h3>
+    <p class="movie-card__meta">{{ movie.year }}</p>
+
+    <div class="movie-card__rating" [attr.aria-label]="'Calificacion ' + movie.rating + ' de 5'">
+      <ng-container *ngFor="let _ of [1, 2, 3, 4, 5]; let index = index">
+        <i
+          [class]="icons.star"
+          [class.is-empty]="index >= starCount"
+          aria-hidden="true"
+        ></i>
+      </ng-container>
+      <span>{{ movie.ratingLabel }}</span>
+    </div>
+  </div>
+</article>
