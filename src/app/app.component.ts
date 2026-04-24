@@ -1,41 +1,58 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { LoginComponent } from './features/auth/login/login.component';
-import { RegisterComponent } from './features/auth/register/register.component';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, LoginComponent, RegisterComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
   template: `
-    <main class="min-h-screen bg-slate-950 text-white">
-      <section class="mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
-        <div class="mb-8 inline-flex rounded-2xl border border-white/10 bg-white/5 p-1">
-          <button
-            type="button"
-            class="rounded-xl px-5 py-2 text-sm font-semibold transition"
-            [class]="currentView === 'login' ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:text-white'"
-            (click)="currentView = 'login'"
-          >
-            Iniciar sesion
-          </button>
-          <button
-            type="button"
-            class="rounded-xl px-5 py-2 text-sm font-semibold transition"
-            [class]="currentView === 'register' ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:text-white'"
-            (click)="currentView = 'register'"
-          >
-            Registrarse
-          </button>
-        </div>
+    <div class="min-h-screen bg-slate-950 text-white">
+      <header class="sticky top-0 z-10 border-b border-white/10 bg-slate-950/90 backdrop-blur">
+        <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <a routerLink="/auth" class="text-lg font-bold tracking-wide text-cyan-300">FILMAX</a>
 
-        <app-login *ngIf="currentView === 'login'"></app-login>
-        <app-register *ngIf="currentView === 'register'"></app-register>
-      </section>
-    </main>
+          <nav class="flex items-center gap-2">
+            <a
+              routerLink="/auth"
+              routerLinkActive="bg-white/20 text-white"
+              class="rounded-xl px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
+            >
+              Auth
+            </a>
+            <a
+              routerLink="/catalog"
+              routerLinkActive="bg-white/20 text-white"
+              class="rounded-xl px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
+            >
+              Catalogo
+            </a>
+            <button
+              *ngIf="authService.isAuthenticated()"
+              type="button"
+              class="ml-2 rounded-xl border border-rose-400/40 px-3 py-2 text-sm font-semibold text-rose-200 transition hover:bg-rose-400/20"
+              (click)="logout()"
+            >
+              Cerrar sesion
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      <main class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
   `,
   styles: []
 })
 export class AppComponent {
-  protected currentView: 'login' | 'register' = 'login';
+  protected readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  protected logout(): void {
+    this.authService.clearToken();
+    this.router.navigateByUrl('/auth');
+  }
 }

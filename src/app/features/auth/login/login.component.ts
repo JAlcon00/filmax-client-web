@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -91,6 +92,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class LoginComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   protected readonly loginForm = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -129,6 +131,7 @@ export class LoginComponent {
 
           this.successMessage = 'Credenciales validas. Token recibido correctamente.';
           this.tokenPreview = this.maskToken(token);
+          this.router.navigateByUrl('/catalog');
         },
         error: (error: unknown) => {
           this.errorMessage = this.resolveErrorMessage(error);
