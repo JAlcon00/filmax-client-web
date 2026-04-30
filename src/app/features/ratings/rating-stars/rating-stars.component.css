@@ -1,0 +1,24 @@
+.rating-stars {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.rating-stars__button {
+  border: 0;
+  background: transparent;
+  color: rgba(148, 163, 184, 0.6);
+  cursor: pointer;
+  font-size: 2rem;
+  line-height: 1;
+  padding: 0.1rem;
+}
+
+.rating-stars__button.is-active,
+.rating-stars__button:hover {
+  color: #facc15;
+}
+
+.rating-stars__button:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}

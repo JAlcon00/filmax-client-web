@@ -1,0 +1,10 @@
+<section class="error-alert" role="alert">
+  <div>
+    <h2>No se pudo cargar el catálogo</h2>
+    <p>{{ error.message }}</p>
+  </div>
+
+  <button type="button" (click)="retry.emit()">
+    Reintentar
+  </button>
+</section>

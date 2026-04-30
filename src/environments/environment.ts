@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://localhost:3000',
+  apiBaseUrl: 'https://filmax-service-api.onrender.com/api',
+  allowAnonymousAccess: false,
 };

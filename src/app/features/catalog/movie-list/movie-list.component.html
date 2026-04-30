@@ -1,0 +1,90 @@
+<section class="movie-list-wrap">
+  <header class="catalog-hero">
+    <p class="catalog-hero__eyebrow">Coleccion destacada</p>
+    <h1>Peliculas y series listas para descubrir</h1>
+    <p class="catalog-hero__text">
+      Explora un catalogo visual con tarjetas limpias, favoritos y una experiencia pensada para consumir rapido.
+    </p>
+    <form class="catalog-search" (ngSubmit)="onSearch()">
+      <label class="sr-only" for="catalog-search-input">Buscar en catálogo</label>
+      <input
+        id="catalog-search-input"
+        type="search"
+        [formControl]="searchControl"
+        placeholder="Busca una película o serie"
+        class="catalog-search__input"
+      />
+      <button type="submit" class="catalog-search__button">
+        Buscar
+      </button>
+    </form>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="state === LoadingState.Loading" aria-live="polite" aria-label="Cargando películas">
+    <app-skeleton-card [count]="skeletonCount"></app-skeleton-card>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="state === LoadingState.Error && error" class="movie-list-error">
+    <app-error-alert [error]="error" (retry)="onRetry()"></app-error-alert>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="state === LoadingState.Empty" class="movie-list-empty" role="status" aria-live="polite">
+    <div class="empty-state">
+      <i [class]="icons.search" class="empty-state__icon" aria-hidden="true"></i>
+      <h2 class="empty-state__title">Sin resultados</h2>
+      <p class="empty-state__text">No hay películas disponibles en este momento.</p>
+      <button type="button" class="empty-state__retry" (click)="onRetry()">
+        Reintentar
+      </button>
+    </div>
+  </div>
+
+  <!-- Success State -->
+  <div *ngIf="state === LoadingState.Success && paginatedMovies.length > 0" class="movie-list-grid" role="region" aria-label="Catálogo de películas">
+    <app-movie-card
+      *ngFor="let movie of paginatedMovies"
+      [movie]="movie"
+      (movieSelected)="openMovieDetail($event)"
+    ></app-movie-card>
+  </div>
+
+  <nav *ngIf="state === LoadingState.Success && totalPages > 1" class="catalog-pagination" aria-label="Paginación de resultados">
+    <button
+      type="button"
+      class="catalog-pagination__control"
+      [disabled]="currentPage === 1"
+      (click)="previousPage()"
+    >
+      Anterior
+    </button>
+
+    <button
+      type="button"
+      *ngFor="let page of pageNumbers"
+      class="catalog-pagination__page"
+      [class.is-active]="page === currentPage"
+      [attr.aria-current]="page === currentPage ? 'page' : null"
+      (click)="goToPage(page)"
+    >
+      {{ page }}
+    </button>
+
+    <button
+      type="button"
+      class="catalog-pagination__control"
+      [disabled]="currentPage === totalPages"
+      (click)="nextPage()"
+    >
+      Siguiente
+    </button>
+  </nav>
+
+  <app-movie-detail-modal
+    [isOpen]="isDetailModalOpen"
+    [movie]="selectedMovie"
+    (closed)="closeMovieDetail()"
+  ></app-movie-detail-modal>
+</section>

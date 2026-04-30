@@ -1,0 +1,16 @@
+<div class="rating-stars" role="radiogroup" aria-label="Calificación">
+  <button
+    *ngFor="let star of stars"
+    type="button"
+    class="rating-stars__button"
+    [class.is-active]="star <= activeRating"
+    [attr.aria-checked]="star === initialRating"
+    [attr.aria-label]="star + ' de 5'"
+    role="radio"
+    (click)="setRating(star)"
+    (mouseenter)="hoveredRating = star"
+    (mouseleave)="hoveredRating = 0"
+  >
+    ★
+  </button>
+</div>
