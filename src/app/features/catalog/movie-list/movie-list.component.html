@@ -5,6 +5,19 @@
     <p class="catalog-hero__text">
       Explora un catalogo visual con tarjetas limpias, favoritos y una experiencia pensada para consumir rapido.
     </p>
+    <form class="catalog-search" (ngSubmit)="onSearch()">
+      <label class="sr-only" for="catalog-search-input">Buscar en catálogo</label>
+      <input
+        id="catalog-search-input"
+        type="search"
+        [formControl]="searchControl"
+        placeholder="Busca una película o serie"
+        class="catalog-search__input"
+      />
+      <button type="submit" class="catalog-search__button">
+        Buscar
+      </button>
+    </form>
   </header>
 
   <!-- Loading State -->

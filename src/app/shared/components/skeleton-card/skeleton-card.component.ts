@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './skeleton-card.component.html',
   styleUrl: './skeleton-card.component.css'
 })
-export class SkeletonCardComponent {
+export class SkeletonCardComponent implements OnInit, OnChanges {
   @Input() count: number = 1;
 
   protected skeletons = Array.from({ length: this.count }, (_, i) => i);

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MovieCardComponent, MovieCardViewModel } from '../movie-card/movie-card.component';
 import { MoviesService, MovieViewModel } from '../../../core/services/movies.service';
 import { SkeletonCardComponent } from '../../../shared/components/skeleton-card/skeleton-card.component';
@@ -12,6 +13,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MovieCardComponent,
     SkeletonCardComponent,
     ErrorAlertComponent
@@ -24,6 +26,7 @@ export class MovieListComponent implements OnInit {
 
   protected readonly LoadingState = LoadingState;
   protected readonly icons = APP_ICONS;
+  protected readonly searchControl = new FormControl('The Matrix', { nonNullable: true });
 
   protected movies: MovieCardViewModel[] = [];
   protected state: LoadingState = LoadingState.Idle;
@@ -38,20 +41,47 @@ export class MovieListComponent implements OnInit {
    * Carga las películas desde el servicio
    */
   protected loadMovies(): void {
+    const searchTerm = this.searchControl.value.trim();
+
+    if (!searchTerm) {
+      this.movies = [];
+      this.error = {
+        type: ErrorType.BadRequest,
+        message: 'Escribe un término de búsqueda para consultar el catálogo.',
+      };
+      this.state = LoadingState.Empty;
+      return;
+    }
+
     this.state = LoadingState.Loading;
     this.error = null;
 
-    // Simular delay de carga
-    setTimeout(() => {
-      this.movies = this.getDefaultMovies();
-      
-      // Si no hay películas, mostrar estado Empty
-      if (this.movies.length === 0) {
-        this.state = LoadingState.Empty;
-      } else {
-        this.state = LoadingState.Success;
+    this.moviesService.searchMoviesSafe(searchTerm).subscribe((result) => {
+      this.movies = this.normalizeMoviesToCardView(result.items);
+
+      if (result.status === 'error') {
+        this.error = {
+          type: ErrorType.Network,
+          message: result.errorMessage ?? 'No se pudo consultar el catálogo.',
+        };
+        this.state = LoadingState.Error;
+        return;
       }
-    }, 1000);
+
+      if (result.status === 'empty') {
+        this.state = LoadingState.Empty;
+        return;
+      }
+
+      this.state = LoadingState.Success;
+    });
+  }
+
+  /**
+   * Busca películas con el término escrito
+   */
+  protected onSearch(): void {
+    this.loadMovies();
   }
 
   /**
@@ -66,6 +96,8 @@ export class MovieListComponent implements OnInit {
    */
   private normalizeMoviesToCardView(movies: MovieViewModel[]): MovieCardViewModel[] {
     return movies.map(m => ({
+      externalId: m.id,
+      type: m.type,
       title: m.title,
       year: m.year || new Date().getFullYear(),
       rating: m.rating || 0,
@@ -75,74 +107,10 @@ export class MovieListComponent implements OnInit {
   }
 
   /**
-   * Retorna películas por defecto (hardcodeadas para testing sin backend)
-   */
-  private getDefaultMovies(): MovieCardViewModel[] {
-    return [
-      // {
-      //   title: 'Inception',
-      //   year: 2010,
-      //   rating: 8.8,
-      //   ratingLabel: '8.8 IMDb',
-      //   imageUrl: 'https://i.pinimg.com/736x/0b/e1/da/0be1dafba6a85a2b21dbb27102fd4d3b.jpg'
-      // },
-      // {
-      //   title: 'Interstellar',
-      //   year: 2014,
-      //   rating: 8.6,
-      //   ratingLabel: '8.6 IMDb',
-      //   imageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg'
-      // },
-      // {
-      //   title: 'Parasite',
-      //   year: 2019,
-      //   rating: 8.6,
-      //   ratingLabel: '8.6 IMDb',
-      //   imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/53/Parasite_%282019_film%29.png'
-      // },
-      // {
-      //   title: 'Pulp Fiction',
-      //   year: 1994,
-      //   rating: 8.9,
-      //   ratingLabel: '8.9 IMDb',
-      //   imageUrl: 'https://i.pinimg.com/1200x/f0/01/3c/f0013ca4a05245afde43e0eaa7d1a2ce.jpg'
-      // },
-      // {
-      //   title: 'The Godfather',
-      //   year: 1972,
-      //   rating: 9.2,
-      //   ratingLabel: '9.2 IMDb',
-      //   imageUrl: 'https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg'
-      // },
-      // {
-      //   title: 'Amores Perros',
-      //   year: 2000,
-      //   rating: 8.1,
-      //   ratingLabel: '8.1 IMDb',
-      //   imageUrl: 'https://i.pinimg.com/736x/7c/6c/b6/7c6cb6cf241d6487725d877b85571856.jpg'
-      // },
-      // {
-      //   title: 'Amelie',
-      //   year: 2001,
-      //   rating: 8.3,
-      //   ratingLabel: '8.3 IMDb',
-      //   imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/53/Amelie_poster.jpg'
-      // },
-      // {
-      //   title: 'V de Vendetta',
-      //   year: 2005,
-      //   rating: 8.2,
-      //   ratingLabel: '8.2 IMDb',
-      //   imageUrl: 'https://i.pinimg.com/736x/9b/22/24/9b22243e735e2ad0f018ac2bf9a0460f.jpg'
-      // }
-    ];
-  }
-
-  /**
    * Mapea errores HTTP a AppError
    */
-  private mapErrorResponse(error: any): AppError {
-    const statusCode = error.status;
+  private mapErrorResponse(error: unknown): AppError {
+    const statusCode = typeof error === 'object' && error !== null && 'status' in error ? Number((error as { status?: number }).status) : 0;
 
     if (!statusCode || statusCode === 0) {
       return {
@@ -186,7 +154,9 @@ export class MovieListComponent implements OnInit {
 
     return {
       type: ErrorType.Unknown,
-      message: error.message || 'Error desconocido',
+      message: typeof error === 'object' && error !== null && 'message' in error && typeof (error as { message?: string }).message === 'string'
+        ? (error as { message: string }).message
+        : 'Error desconocido',
       statusCode
     };
   }

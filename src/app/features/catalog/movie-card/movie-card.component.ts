@@ -4,6 +4,8 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
 import { MovieDetailModalComponent } from '../movie-detail-modal/movie-detail-modal.component';
 
 export interface MovieCardViewModel {
+  externalId?: string;
+  type?: 'movie' | 'series';
   title: string;
   year: number;
   rating: number;

@@ -6,15 +6,19 @@ import { environment } from '../../../environments/environment';
 
 export interface Movie {
   id: string;
+  externalId?: string;
   title: string;
   description?: string;
   genre?: string[];
   year?: number;
   poster?: string;
+  posterUrl?: string | null;
   rating?: number;
+  type?: 'movie' | 'series';
 }
 
 export interface SearchResponse {
+  count?: number;
   data?: Movie[];
   results?: Movie[];
   movies?: Movie[];
@@ -32,6 +36,7 @@ export interface MovieViewModel {
   year: number | null;
   poster: string;
   rating: number;
+  type?: 'movie' | 'series';
 }
 
 export interface SearchResult {
@@ -51,7 +56,7 @@ export class MoviesService {
    * @returns Observable con los resultados de búsqueda
    */
   searchMovies(searchTerm: string): Observable<SearchResponse> {
-    const params = new HttpParams().set('query', searchTerm);
+    const params = new HttpParams().set('q', searchTerm).set('query', searchTerm).set('limit', '20');
     return this.http.get<SearchResponse>(`${this.moviesUrl}/search`, { params });
   }
 
@@ -61,22 +66,24 @@ export class MoviesService {
    */
   searchMoviesNormalized(searchTerm: string): Observable<Movie[]> {
     return this.searchMovies(searchTerm).pipe(
-      map((resp: any) => {
+      map((resp: unknown) => {
         if (!resp) return [];
 
-        // If the response is an array
         if (Array.isArray(resp)) return resp as Movie[];
 
-        // Common keys
+        const response = resp as Record<string, unknown>;
+
         const keys = ['data', 'results', 'movies', 'items', 'Search'];
         for (const k of keys) {
-          if (resp[k] && Array.isArray(resp[k])) return resp[k];
+          const candidate = response[k];
+
+          if (Array.isArray(candidate)) return candidate as Movie[];
         }
 
-        // Some APIs return array at root under different name
-        if (resp.__root__ && Array.isArray(resp.__root__)) return resp.__root__;
+        const rootArray = response['__root__'];
 
-        // No recognized array, return empty
+        if (Array.isArray(rootArray)) return rootArray as Movie[];
+
         return [] as Movie[];
       })
     );
@@ -87,13 +94,14 @@ export class MoviesService {
    */
   private normalizeMovie(m: Partial<Movie>): MovieViewModel {
     return {
-      id: m.id ?? 'unknown-id',
+      id: m.id ?? m.externalId ?? 'unknown-id',
       title: m.title ?? 'Untitled',
       description: m.description ?? 'Sin descripción disponible',
       genre: (m.genre && m.genre.length > 0) ? m.genre : ['Sin especificar'],
       year: m.year ?? null,
-      poster: m.poster ?? 'https://via.placeholder.com/300x450?text=No+Image',
+      poster: m.poster ?? m.posterUrl ?? 'https://via.placeholder.com/300x450?text=No+Image',
       rating: typeof m.rating === 'number' ? m.rating : 0,
+      type: (m.type === 'series') ? 'series' : 'movie',
     };
   }
 
@@ -127,7 +135,7 @@ export class MoviesService {
         const duration = Math.max(0, Math.round(end - start));
         return { items: res.items, durationMs: duration, status: res.status };
       }),
-      catchError((err) => {
+      catchError(() => {
         const end = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
         const duration = Math.max(0, Math.round(end - start));
         return of({ items: [], durationMs: duration, status: 'error' as const });
@@ -149,24 +157,25 @@ export class MoviesService {
    */
   getPopularMovies(): Observable<MovieViewModel[]> {
     return this.getMovies().pipe(
-      map((resp: any) => {
-        // Normalizar la respuesta a un array de Movie
+      map((resp: unknown) => {
         let movies: Movie[] = [];
-        
+        const response = resp as Record<string, unknown>;
+
         if (Array.isArray(resp)) {
           movies = resp as Movie[];
         } else {
           const keys = ['data', 'results', 'movies', 'items', 'Search', 'popular'];
           for (const k of keys) {
-            if (resp[k] && Array.isArray(resp[k])) {
-              movies = resp[k];
+            const candidate = response[k];
+
+            if (Array.isArray(candidate)) {
+              movies = candidate as Movie[];
               break;
             }
           }
         }
 
-        // Convertir a MovieViewModel
-        return movies.map(m => this.normalizeMovie(m));
+        return movies.map((m) => this.normalizeMovie(m));
       }),
       catchError((error) => {
         console.error('Error fetching popular movies:', error);

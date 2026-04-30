@@ -1,4 +1,4 @@
-<article class="movie-card" (click)="openModal()" role="button" tabindex="0" 
+<article class="movie-card" (click)="openModal()" role="button" tabindex="0"
   (keydown.enter)="openModal()" (keydown.space)="openModal()">
   <button
     class="movie-card__favorite"
@@ -32,5 +32,5 @@
 <app-movie-detail-modal
   [isOpen]="isModalOpen"
   [movie]="movie"
-  (close)="closeModal()"
+  (closed)="closeModal()"
 ></app-movie-detail-modal>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { APP_ICONS } from '../../../shared/icons/app-icons';
 
 @Component({
@@ -9,7 +9,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
   templateUrl: './rating-stars.component.html',
   styleUrl: './rating-stars.component.css'
 })
-export class RatingStarsComponent {
+export class RatingStarsComponent implements OnInit {
   @Input({ required: false }) initialRating: number = 0;
   @Output() ratingChange = new EventEmitter<number>();
 

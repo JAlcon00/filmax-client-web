@@ -6,6 +6,6 @@ import { CatalogListComponent } from './features/catalog/catalog-list/catalog-li
 export const appRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'catalog' },
   { path: 'auth', component: AuthPageComponent },
-  { path: 'catalog', component: CatalogListComponent }, // Guard removido temporalmente para testing sin backend
+  { path: 'catalog', component: CatalogListComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: 'catalog' },
 ];
