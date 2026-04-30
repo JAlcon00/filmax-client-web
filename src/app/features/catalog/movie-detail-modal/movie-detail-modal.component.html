@@ -1,21 +1,23 @@
 <!-- Modal Bootstrap -->
-<div 
+<div
   class="modal"
   [class.show]="isOpen"
   [attr.aria-hidden]="!isOpen"
-  tabindex="-1"
+  tabindex="0"
   role="dialog"
   #modalElement
   (click)="onBackdropClick($event)"
+  (keydown.enter)="closeModal()"
+  (keydown.space)="closeModal()"
 >
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <!-- Header -->
       <div class="modal-header">
         <h5 class="modal-title">{{ movie?.title }}</h5>
-        <button 
-          type="button" 
-          class="btn-close" 
+        <button
+          type="button"
+          class="btn-close"
           aria-label="Close"
           (click)="closeModal()"
           [disabled]="isSubmitting"
@@ -26,8 +28,8 @@
       <div class="modal-body" *ngIf="movie">
         <!-- Imagen -->
         <div class="movie-detail__image">
-          <img 
-            [src]="movie.imageUrl" 
+          <img
+            [src]="movie.imageUrl"
             [alt]="movie.title"
             class="img-fluid rounded"
           />
@@ -55,16 +57,16 @@
 
       <!-- Footer -->
       <div class="modal-footer">
-        <button 
-          type="button" 
+        <button
+          type="button"
           class="btn btn-secondary"
           (click)="closeModal()"
           [disabled]="isSubmitting"
         >
           Cerrar
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           class="btn btn-primary"
           (click)="saveRating()"
           [disabled]="isSubmitting || selectedRating === 0"
@@ -79,7 +81,7 @@
 </div>
 
 <!-- Modal Backdrop -->
-<div 
+<div
   class="modal-backdrop fade"
   [class.show]="isOpen"
   *ngIf="isOpen"

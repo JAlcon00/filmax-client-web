@@ -28,5 +28,5 @@ export interface AppError {
   type: ErrorType;
   message: string;
   statusCode?: number;
-  details?: any;
+  details?: unknown;
 }
