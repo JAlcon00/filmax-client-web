@@ -16,7 +16,7 @@ export class MovieListComponent {
       year: 2010,
       rating: 5,
       ratingLabel: '4.5K Me gusta',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/en/7/7f/Inception_ver3.jpg'
+      imageUrl: 'https://i.pinimg.com/736x/0b/e1/da/0be1dafba6a85a2b21dbb27102fd4d3b.jpg'
     },
     {
       title: 'Interstellar',
@@ -37,7 +37,7 @@ export class MovieListComponent {
       year: 1994,
       rating: 5,
       ratingLabel: '4.5K Me gusta',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/en/8/82/Pulp_Fiction_cover.jpg'
+      imageUrl: 'https://i.pinimg.com/1200x/f0/01/3c/f0013ca4a05245afde43e0eaa7d1a2ce.jpg'
     },
     {
       title: 'The Godfather',
@@ -47,11 +47,11 @@ export class MovieListComponent {
       imageUrl: 'https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg'
     },
     {
-      title: 'Roma',
-      year: 2018,
-      rating: 4,
+      title: 'Amores Perros',
+      year: 2000,
+      rating: 5,
       ratingLabel: '3.5K Me gusta',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/en/f/fd/Roma_%282018_film%29.png'
+      imageUrl: 'https://i.pinimg.com/736x/7c/6c/b6/7c6cb6cf241d6487725d877b85571856.jpg'
     },
     {
       title: 'Amelie',
@@ -65,7 +65,7 @@ export class MovieListComponent {
       year: 2005,
       rating: 5,
       ratingLabel: '4.5K Me gusta',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/en/9/9f/Vforvendetta_m.jpg'
+      imageUrl: 'https://i.pinimg.com/736x/9b/22/24/9b22243e735e2ad0f018ac2bf9a0460f.jpg'
     }
   ];
 }
