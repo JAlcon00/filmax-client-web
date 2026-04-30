@@ -1,17 +1,23 @@
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-skeleton-card',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './skeleton-card.component.html',
-  styleUrls: ['./skeleton-card.component.css']
+  styleUrl: './skeleton-card.component.css'
 })
-export class SkeletonCardComponent {
-  @Input() count = 8;
+export class SkeletonCardComponent implements OnInit, OnChanges {
+  @Input() count: number = 1;
 
-  protected get skeletons(): number[] {
-    return Array.from({ length: this.count }, (_, index) => index);
+  protected skeletons = Array.from({ length: this.count }, (_, i) => i);
+
+  ngOnInit(): void {
+    this.skeletons = Array.from({ length: this.count }, (_, i) => i);
+  }
+
+  ngOnChanges(): void {
+    this.skeletons = Array.from({ length: this.count }, (_, i) => i);
   }
 }

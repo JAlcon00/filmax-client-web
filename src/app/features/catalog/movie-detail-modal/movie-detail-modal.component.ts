@@ -3,24 +3,23 @@ import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit, 
 import { firstValueFrom } from 'rxjs';
 import { RatingStarsComponent } from '../../ratings/rating-stars/rating-stars.component';
 import { RatingsService } from '../../../core/services/ratings.service';
-import type { MovieCardViewModel } from '../movie-card/movie-card.component';
+import { MovieCardViewModel } from '../movie-card/movie-card.component';
 
 @Component({
   selector: 'app-movie-detail-modal',
   standalone: true,
   imports: [CommonModule, RatingStarsComponent],
   templateUrl: './movie-detail-modal.component.html',
-  styleUrls: ['./movie-detail-modal.component.css']
+  styleUrl: './movie-detail-modal.component.css'
 })
 export class MovieDetailModalComponent implements OnInit, OnChanges {
-  @Input() isOpen = false;
-  @Input() movie: MovieCardViewModel | null = null;
+  @Input({ required: false }) isOpen = false;
+  @Input({ required: false }) movie: MovieCardViewModel | null = null;
   @Output() closed = new EventEmitter<void>();
   @ViewChild('modalElement') modalElement?: ElementRef<HTMLDivElement>;
 
   protected selectedRating: number = 0;
   protected isSubmitting = false;
-  private readonly fallbackPoster = 'assets/poster-placeholder.svg';
 
   constructor(private ratingsService: RatingsService) {}
 
@@ -89,15 +88,5 @@ export class MovieDetailModalComponent implements OnInit, OnChanges {
     if (event.target === event.currentTarget) {
       this.closeModal();
     }
-  }
-
-  protected onPosterError(event: Event): void {
-    const img = event.target as HTMLImageElement | null;
-
-    if (!img || img.src.endsWith(this.fallbackPoster)) {
-      return;
-    }
-
-    img.src = this.fallbackPoster;
   }
 }

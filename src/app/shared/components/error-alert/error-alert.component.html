@@ -1,10 +1,20 @@
-<section class="error-alert" role="alert">
-  <div>
-    <h2>No se pudo cargar el catálogo</h2>
-    <p>{{ error.message }}</p>
+<div class="error-alert" role="alert" aria-live="polite">
+  <div class="error-alert__icon">
+    <i [class]="getErrorIcon()" aria-hidden="true"></i>
   </div>
 
-  <button type="button" (click)="retry.emit()">
-    Reintentar
+  <div class="error-alert__content">
+    <h3 class="error-alert__title">Algo salió mal</h3>
+    <p class="error-alert__message">{{ getErrorMessage() }}</p>
+  </div>
+
+  <button
+    type="button"
+    class="error-alert__retry"
+    (click)="onRetry()"
+    aria-label="Reintentar"
+    title="Reintentar"
+  >
+    <i [class]="icons.arrowClockwise" aria-hidden="true"></i>
   </button>
-</section>
+</div>

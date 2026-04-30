@@ -1,25 +1,59 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { APP_ICONS } from '../../../shared/icons/app-icons';
 
 @Component({
   selector: 'app-rating-stars',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './rating-stars.component.html',
-  styleUrls: ['./rating-stars.component.css']
+  styleUrl: './rating-stars.component.css'
 })
-export class RatingStarsComponent {
-  @Input() initialRating = 0;
+export class RatingStarsComponent implements OnInit {
+  @Input({ required: false }) initialRating: number = 0;
   @Output() ratingChange = new EventEmitter<number>();
 
-  protected readonly stars = [1, 2, 3, 4, 5];
-  protected hoveredRating = 0;
+  protected readonly icons = APP_ICONS;
+  protected hoverRating: number = 0;
+  protected selectedRating: number = 0;
 
-  protected get activeRating(): number {
-    return this.hoveredRating || this.initialRating;
+  ngOnInit(): void {
+    this.selectedRating = this.initialRating;
   }
 
-  protected setRating(rating: number): void {
+  /**
+   * Maneja el hover sobre una estrella
+   */
+  protected onStarHover(rating: number): void {
+    this.hoverRating = rating;
+  }
+
+  /**
+   * Limpia el hover
+   */
+  protected onStarLeave(): void {
+    this.hoverRating = 0;
+  }
+
+  /**
+   * Maneja el click en una estrella
+   */
+  protected onStarClick(rating: number): void {
+    this.selectedRating = rating;
     this.ratingChange.emit(rating);
+  }
+
+  /**
+   * Devuelve el rating actual a mostrar (hover o selected)
+   */
+  protected getCurrentRating(): number {
+    return this.hoverRating || this.selectedRating;
+  }
+
+  /**
+   * Devuelve si la estrella con index debe estar llena o vacía
+   */
+  protected isStarFilled(index: number): boolean {
+    return index < this.getCurrentRating();
   }
 }

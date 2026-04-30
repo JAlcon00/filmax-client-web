@@ -1,39 +1,90 @@
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
 .skeleton-grid {
   display: grid;
-  gap: 1rem;
   grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+  gap: 1rem;
+  width: 100%;
 }
 
 .skeleton-card {
-  border-radius: 1rem;
-  background: rgba(15, 23, 42, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.85rem;
   padding: 0.75rem;
-}
-
-.skeleton-card__poster,
-.skeleton-card__line {
-  animation: pulse 1.2s ease-in-out infinite;
-  background: linear-gradient(90deg, rgba(51, 65, 85, 0.6), rgba(148, 163, 184, 0.25), rgba(51, 65, 85, 0.6));
-  background-size: 200% 100%;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .skeleton-card__poster {
   aspect-ratio: 2 / 3;
-  border-radius: 0.8rem;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.1)
+  );
+  background-size: 200% 100%;
+  border-radius: 0.5rem;
+  animation: shimmer 2s infinite;
+}
+
+.skeleton-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .skeleton-card__line {
-  height: 0.8rem;
-  border-radius: 999px;
-  margin-top: 0.75rem;
+  height: 0.75rem;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.1)
+  );
+  background-size: 200% 100%;
+  border-radius: 0.25rem;
+  animation: shimmer 2s infinite;
 }
 
-.skeleton-card__line.is-short {
-  width: 55%;
+.skeleton-card__line--title {
+  width: 90%;
+  height: 1rem;
+}
+
+.skeleton-card__line--meta {
+  width: 60%;
+  height: 0.65rem;
+}
+
+.skeleton-card__line--rating {
+  width: 75%;
+  height: 0.65rem;
 }
 
 @keyframes pulse {
-  to {
-    background-position: -200% 0;
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@media (max-width: 768px) {
+  .skeleton-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
   }
 }

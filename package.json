@@ -1,7 +1,7 @@
 {
   "name": "filmax-client-web",
   "version": "0.0.1",
-  "description": "FILMAX Frontend - Catálogo de películas con Angular",
+  "description": "FILMAX Frontend - Cat\u00e1logo de pel\u00edculas con Angular",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -21,6 +21,8 @@
     "@angular/platform-browser": "^19.0.0",
     "@angular/platform-browser-dynamic": "^19.0.0",
     "@angular/router": "^19.0.0",
+    "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
     "rxjs": "^7.8.0",
     "tslib": "^2.6.0",
     "zone.js": "^0.15.0"

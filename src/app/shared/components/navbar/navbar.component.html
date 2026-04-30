@@ -1,0 +1,33 @@
+<header class="fm-navbar">
+  <div class="fm-navbar__inner">
+    <div class="fm-left-group">
+      <a class="fm-brand" href="#" aria-label="Ir al inicio de FilMax">
+        <span class="fm-brand__badge" aria-hidden="true">
+          <i [class]="icons.logo"></i>
+        </span>
+        <span class="fm-brand__name">FilMax</span>
+      </a>
+
+      <nav class="fm-menu" aria-label="Navegacion principal">
+        <a href="#" class="fm-menu__link">PELICULAS</a>
+        <a href="#" class="fm-menu__link">FAVORITOS</a>
+      </nav>
+    </div>
+
+    <div class="fm-actions">
+      <label class="fm-search" for="navbar-search">
+        <i [class]="icons.search" aria-hidden="true"></i>
+        <input
+          id="navbar-search"
+          type="search"
+          placeholder="Busca peliculas, resenas..."
+          aria-label="Buscar peliculas o resenas"
+        />
+      </label>
+
+      <button type="button" class="fm-profile-btn" aria-label="Perfil de usuario">
+        <i [class]="icons.user"></i>
+      </button>
+    </div>
+  </div>
+</header>
