@@ -142,4 +142,36 @@ export class MoviesService {
   getMovies(): Observable<SearchResponse> {
     return this.http.get<SearchResponse>(`${this.moviesUrl}`);
   }
+
+  /**
+   * Obtiene películas populares normalizadas
+   * @returns Observable con array de MovieViewModel
+   */
+  getPopularMovies(): Observable<MovieViewModel[]> {
+    return this.getMovies().pipe(
+      map((resp: any) => {
+        // Normalizar la respuesta a un array de Movie
+        let movies: Movie[] = [];
+        
+        if (Array.isArray(resp)) {
+          movies = resp as Movie[];
+        } else {
+          const keys = ['data', 'results', 'movies', 'items', 'Search', 'popular'];
+          for (const k of keys) {
+            if (resp[k] && Array.isArray(resp[k])) {
+              movies = resp[k];
+              break;
+            }
+          }
+        }
+
+        // Convertir a MovieViewModel
+        return movies.map(m => this.normalizeMovie(m));
+      }),
+      catchError((error) => {
+        console.error('Error fetching popular movies:', error);
+        throw error;
+      })
+    );
+  }
 }
