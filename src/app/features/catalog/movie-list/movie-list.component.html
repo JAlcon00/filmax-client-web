@@ -7,7 +7,30 @@
     </p>
   </header>
 
-  <div class="movie-list-grid">
+  <!-- Loading State -->
+  <div *ngIf="state === LoadingState.Loading" aria-live="polite" aria-label="Cargando películas">
+    <app-skeleton-card [count]="skeletonCount"></app-skeleton-card>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="state === LoadingState.Error && error" class="movie-list-error">
+    <app-error-alert [error]="error" (retry)="onRetry()"></app-error-alert>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="state === LoadingState.Empty" class="movie-list-empty" role="status" aria-live="polite">
+    <div class="empty-state">
+      <i [class]="icons.search" class="empty-state__icon" aria-hidden="true"></i>
+      <h2 class="empty-state__title">Sin resultados</h2>
+      <p class="empty-state__text">No hay películas disponibles en este momento.</p>
+      <button type="button" class="empty-state__retry" (click)="onRetry()">
+        Reintentar
+      </button>
+    </div>
+  </div>
+
+  <!-- Success State -->
+  <div *ngIf="state === LoadingState.Success && movies.length > 0" class="movie-list-grid" role="region" aria-label="Catálogo de películas">
     <app-movie-card *ngFor="let movie of movies" [movie]="movie"></app-movie-card>
   </div>
 </section>
