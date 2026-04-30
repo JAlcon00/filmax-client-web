@@ -1,0 +1,24 @@
+<div class="rating-stars">
+  <div class="rating-stars__container">
+    <ng-container *ngFor="let _ of [1, 2, 3, 4, 5]; let index = index">
+      <button
+        type="button"
+        class="rating-stars__star"
+        [class.is-filled]="isStarFilled(index)"
+        (mouseenter)="onStarHover(index + 1)"
+        (mouseleave)="onStarLeave()"
+        (click)="onStarClick(index + 1)"
+        [attr.aria-label]="'Calificar ' + (index + 1) + ' de 5'"
+        [title]="'Calificar ' + (index + 1) + ' de 5'"
+      >
+        <i [class]="icons.star" aria-hidden="true"></i>
+      </button>
+    </ng-container>
+  </div>
+  <p class="rating-stars__label" *ngIf="selectedRating > 0">
+    Tu calificación: <strong>{{ selectedRating }} de 5</strong>
+  </p>
+  <p class="rating-stars__label" *ngIf="selectedRating === 0">
+    Selecciona una calificación
+  </p>
+</div>

@@ -1,0 +1,86 @@
+<!-- Modal Bootstrap -->
+<div 
+  class="modal"
+  [class.show]="isOpen"
+  [attr.aria-hidden]="!isOpen"
+  tabindex="-1"
+  role="dialog"
+  #modalElement
+  (click)="onBackdropClick($event)"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">{{ movie?.title }}</h5>
+        <button 
+          type="button" 
+          class="btn-close" 
+          aria-label="Close"
+          (click)="closeModal()"
+          [disabled]="isSubmitting"
+        ></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body" *ngIf="movie">
+        <!-- Imagen -->
+        <div class="movie-detail__image">
+          <img 
+            [src]="movie.imageUrl" 
+            [alt]="movie.title"
+            class="img-fluid rounded"
+          />
+        </div>
+
+        <!-- Info -->
+        <div class="movie-detail__info">
+          <p class="text-muted">
+            <strong>Año:</strong> {{ movie.year }}
+          </p>
+          <p class="text-muted">
+            <strong>Calificación IMDB:</strong> {{ movie.rating }}/10
+          </p>
+        </div>
+
+        <!-- Rating Section -->
+        <div class="movie-detail__rating">
+          <h6>Tu Calificación</h6>
+          <app-rating-stars
+            [initialRating]="selectedRating"
+            (ratingChange)="onRatingChange($event)"
+          ></app-rating-stars>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-secondary"
+          (click)="closeModal()"
+          [disabled]="isSubmitting"
+        >
+          Cerrar
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary"
+          (click)="saveRating()"
+          [disabled]="isSubmitting || selectedRating === 0"
+        >
+          <span *ngIf="!isSubmitting">Guardar Calificación</span>
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+          <span *ngIf="isSubmitting">Guardando...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop -->
+<div 
+  class="modal-backdrop fade"
+  [class.show]="isOpen"
+  *ngIf="isOpen"
+></div>
