@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
   apiBaseUrl: 'http://localhost:3000',
-  allowAnonymousAccess: true,
+  allowAnonymousAccess: false,
 };
