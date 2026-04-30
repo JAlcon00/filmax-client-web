@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ import { AuthService } from './core/services/auth.service';
     <div class="min-h-screen bg-slate-950 text-white">
       <header class="sticky top-0 z-10 border-b border-white/10 bg-slate-950/90 backdrop-blur">
         <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <a routerLink="/auth" class="text-lg font-bold tracking-wide text-cyan-300">FILMAX</a>
+          <a routerLink="/catalog" class="text-lg font-bold tracking-wide text-cyan-300">FILMAX</a>
 
           <nav class="flex items-center gap-2">
             <a
@@ -40,6 +41,15 @@ import { AuthService } from './core/services/auth.service';
         </div>
       </header>
 
+      <div *ngIf="isAnonymousAccessEnabled" class="border-b border-amber-400/20 bg-amber-400/10 px-4 py-3 text-amber-100">
+        <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-2 text-sm sm:px-6 lg:px-8">
+          <span class="inline-flex items-center rounded-full border border-amber-300/30 bg-amber-300/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-200">
+            Modo temporal
+          </span>
+          <span>La app está permitiendo acceso anónimo para validar el catálogo sin autenticación.</span>
+        </div>
+      </div>
+
       <main class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <router-outlet></router-outlet>
       </main>
@@ -48,6 +58,7 @@ import { AuthService } from './core/services/auth.service';
   styles: []
 })
 export class AppComponent {
+  protected readonly isAnonymousAccessEnabled = environment.allowAnonymousAccess;
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
