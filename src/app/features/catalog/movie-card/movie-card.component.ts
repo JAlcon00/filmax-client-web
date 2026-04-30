@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { APP_ICONS } from '../../../shared/icons/app-icons';
-import { MovieDetailModalComponent } from '../movie-detail-modal/movie-detail-modal.component';
 
 export interface MovieCardViewModel {
   externalId?: string;
@@ -16,31 +15,40 @@ export interface MovieCardViewModel {
 @Component({
   selector: 'app-movie-card',
   standalone: true,
-  imports: [CommonModule, MovieDetailModalComponent],
+  imports: [CommonModule],
   templateUrl: './movie-card.component.html',
-  styleUrl: './movie-card.component.css'
+  styleUrls: ['./movie-card.component.css']
 })
 export class MovieCardComponent {
-  @Input({ required: true }) movie!: MovieCardViewModel;
+  @Input() movie!: MovieCardViewModel;
+  @Output() movieSelected = new EventEmitter<MovieCardViewModel>();
 
-  protected readonly icons = APP_ICONS;
-  protected isModalOpen = false;
+  readonly icons = APP_ICONS;
+  readonly stars = [1, 2, 3, 4, 5];
+  private readonly fallbackPoster = 'assets/poster-placeholder.svg';
 
-  protected get starCount(): number {
+  get starCount(): number {
     return Math.max(0, Math.min(5, Math.round(this.movie.rating)));
   }
 
   /**
    * Abre el modal de detalle de película
    */
-  protected openModal(): void {
-    this.isModalOpen = true;
+  openModal(): void {
+    this.movieSelected.emit(this.movie);
   }
 
-  /**
-   * Cierra el modal de detalle de película
-   */
-  protected closeModal(): void {
-    this.isModalOpen = false;
+  trackByStar(_index: number, star: number): number {
+    return star;
+  }
+
+  onPosterError(event: Event): void {
+    const img = event.target as HTMLImageElement | null;
+
+    if (!img || img.src.endsWith(this.fallbackPoster)) {
+      return;
+    }
+
+    img.src = this.fallbackPoster;
   }
 }

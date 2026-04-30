@@ -49,6 +49,7 @@ export interface SearchResult {
 export class MoviesService {
   private readonly http = inject(HttpClient);
   private readonly moviesUrl = `${environment.apiBaseUrl}/movies`;
+  private readonly fallbackPoster = 'assets/poster-placeholder.svg';
 
   /**
    * Busca películas por término
@@ -99,7 +100,7 @@ export class MoviesService {
       description: m.description ?? 'Sin descripción disponible',
       genre: (m.genre && m.genre.length > 0) ? m.genre : ['Sin especificar'],
       year: m.year ?? null,
-      poster: m.poster ?? m.posterUrl ?? 'https://via.placeholder.com/300x450?text=No+Image',
+      poster: m.poster ?? m.posterUrl ?? this.fallbackPoster,
       rating: typeof m.rating === 'number' ? m.rating : 0,
       type: (m.type === 'series') ? 'series' : 'movie',
     };
@@ -156,31 +157,11 @@ export class MoviesService {
    * @returns Observable con array de MovieViewModel
    */
   getPopularMovies(): Observable<MovieViewModel[]> {
-    return this.getMovies().pipe(
-      map((resp: unknown) => {
-        let movies: Movie[] = [];
-        const response = resp as Record<string, unknown>;
+    const seedTerms = ['avengers', 'batman', 'spider man', 'harry potter', 'star wars', 'matrix'];
+    const randomTerm = seedTerms[Math.floor(Math.random() * seedTerms.length)];
 
-        if (Array.isArray(resp)) {
-          movies = resp as Movie[];
-        } else {
-          const keys = ['data', 'results', 'movies', 'items', 'Search', 'popular'];
-          for (const k of keys) {
-            const candidate = response[k];
-
-            if (Array.isArray(candidate)) {
-              movies = candidate as Movie[];
-              break;
-            }
-          }
-        }
-
-        return movies.map((m) => this.normalizeMovie(m));
-      }),
-      catchError((error) => {
-        console.error('Error fetching popular movies:', error);
-        throw error;
-      })
+    return this.searchMoviesNormalized(randomTerm).pipe(
+      map((movies) => movies.map((m) => this.normalizeMovie(m)))
     );
   }
 }
