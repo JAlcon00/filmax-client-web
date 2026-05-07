@@ -23,6 +23,11 @@
 	width: 100%;
 }
 
+.fm-navbar__centered {
+	justify-content: center;
+	gap: 0;
+}
+
 .fm-left-group {
 	align-items: center;
 	display: inline-flex;

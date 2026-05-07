@@ -15,9 +15,6 @@ import { AuthService } from '../../../core/services/auth.service';
       <div class="relative overflow-hidden px-6 py-10 sm:px-8 sm:py-12 lg:px-12">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.24),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.22),_transparent_32%)]"></div>
         <div class="relative max-w-xl">
-          <span class="inline-flex items-center rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-sky-200">
-            FE-05 Sesion Token
-          </span>
           <h1 class="mt-5 text-4xl font-bold tracking-tight text-white sm:text-5xl">
             Bienvenido de vuelta
           </h1>

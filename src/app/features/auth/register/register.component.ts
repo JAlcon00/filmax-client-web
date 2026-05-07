@@ -14,9 +14,6 @@ import { AuthService } from '../../../core/services/auth.service';
       <div class="relative overflow-hidden px-6 py-10 sm:px-8 sm:py-12 lg:px-12">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.24),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.22),_transparent_32%)]"></div>
         <div class="relative max-w-xl">
-          <span class="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-200">
-            FE-02 Registro API
-          </span>
           <h1 class="mt-5 text-4xl font-bold tracking-tight text-white sm:text-5xl">
             Crea tu cuenta en Filmax
           </h1>

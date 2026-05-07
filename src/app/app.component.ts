@@ -11,10 +11,10 @@ import { environment } from '../environments/environment';
   template: `
     <div class="min-h-screen bg-slate-950 text-white">
       <header class="sticky top-0 z-10 border-b border-white/10 bg-slate-950/90 backdrop-blur">
-        <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <div class="mx-auto flex w-full max-w-6xl items-center px-4 py-4 sm:px-6 lg:px-8" [class.justify-center]="isAuthRoute" [class.justify-between]="!isAuthRoute">
           <a routerLink="/catalog" class="text-lg font-bold tracking-wide text-cyan-300">FILMAX</a>
 
-          <nav class="flex items-center gap-2">
+          <nav *ngIf="!isAuthRoute" class="flex items-center gap-2">
             <a
               routerLink="/auth"
               routerLinkActive="bg-white/20 text-white"
@@ -61,6 +61,10 @@ export class AppComponent {
   protected readonly isAnonymousAccessEnabled = environment.allowAnonymousAccess;
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  protected get isAuthRoute(): boolean {
+    return this.router.url.startsWith('/auth');
+  }
 
   protected logout(): void {
     this.authService.clearToken();
