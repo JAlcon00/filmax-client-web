@@ -30,6 +30,14 @@ import { environment } from '../environments/environment';
             >
               Catalogo
             </a>
+            <a
+              *ngIf="authService.isAuthenticated()"
+              routerLink="/favorites"
+              routerLinkActive="bg-white/20 text-white"
+              class="rounded-xl px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
+            >
+              Favoritos
+            </a>
             <button
               *ngIf="authService.isAuthenticated()"
               type="button"
