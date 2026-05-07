@@ -4,11 +4,12 @@ import { firstValueFrom } from 'rxjs';
 import { RatingStarsComponent } from '../../ratings/rating-stars/rating-stars.component';
 import { RatingsService } from '../../../core/services/ratings.service';
 import { MovieCardViewModel } from '../movie-card/movie-card.component';
+import { MovieCommentsComponent } from '../movie-comments/movie-comments.component';
 
 @Component({
   selector: 'app-movie-detail-modal',
   standalone: true,
-  imports: [CommonModule, RatingStarsComponent],
+  imports: [CommonModule, RatingStarsComponent, MovieCommentsComponent],
   templateUrl: './movie-detail-modal.component.html',
   styleUrl: './movie-detail-modal.component.css'
 })
@@ -25,14 +26,14 @@ export class MovieDetailModalComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     if (this.movie) {
-      const existing = this.ratingsService.getRatingByContentId(this.getContentId());
+      const existing = this.getExistingRating();
       this.selectedRating = existing?.rating || 0;
     }
   }
 
   ngOnChanges(): void {
     if (this.movie) {
-      const existing = this.ratingsService.getRatingByContentId(this.getContentId());
+      const existing = this.getExistingRating();
       this.selectedRating = existing?.rating || 0;
     }
   }
@@ -55,7 +56,7 @@ export class MovieDetailModalComponent implements OnInit, OnChanges {
     this.isSubmitting = true;
     try {
       await firstValueFrom(this.ratingsService.saveRating({
-        externalId: this.getContentId(),
+        ...(this.movie.contentId ? { contentId: this.movie.contentId } : { externalId: this.movie.externalId ?? this.movie.title }),
         title: this.movie.title,
         type: this.movie.type ?? 'movie',
         posterUrl: this.movie.imageUrl,
@@ -78,7 +79,18 @@ export class MovieDetailModalComponent implements OnInit, OnChanges {
   }
 
   private getContentId(): string {
-    return this.movie?.externalId ?? this.movie?.title ?? 'unknown-content';
+    return this.movie?.contentId ?? this.movie?.externalId ?? this.movie?.title ?? 'unknown-content';
+  }
+
+  private getExistingRating() {
+    const contentId = this.getContentId();
+    const byContentId = this.ratingsService.getRatingByContentId(contentId);
+
+    if (byContentId || !this.movie?.externalId) {
+      return byContentId;
+    }
+
+    return this.ratingsService.getRatingByExternalId(this.movie.externalId);
   }
 
   /**

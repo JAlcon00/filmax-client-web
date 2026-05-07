@@ -165,7 +165,8 @@ export class MovieListComponent implements OnInit {
   private normalizeMoviesToCardView(movies: MovieViewModel[]): MovieCardViewModel[] {
     return movies
       .map(m => ({
-        externalId: m.id,
+        externalId: m.externalId ?? m.id,
+        contentId: m.contentId,
         type: m.type,
         title: m.title,
         year: m.year || new Date().getFullYear(),

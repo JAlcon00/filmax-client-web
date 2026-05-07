@@ -22,6 +22,8 @@ export interface User {
   id?: string;
   name?: string;
   email?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LoginResponse {
@@ -40,6 +42,7 @@ export interface LoginResponse {
 const AUTH_TOKEN_KEY = 'filmax_auth_token';
 const AUTH_TOKEN_TYPE_KEY = 'filmax_auth_token_type';
 const AUTH_EXPIRES_IN_KEY = 'filmax_auth_expires_in';
+const AUTH_USER_KEY = 'filmax_auth_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -78,6 +81,12 @@ export class AuthService {
       sessionStorage.setItem(AUTH_EXPIRES_IN_KEY, response.expiresIn.toString());
     }
 
+    const user = response.user ?? this.decodeUserFromToken(token);
+
+    if (user) {
+      sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    }
+
     return token;
   }
 
@@ -85,10 +94,31 @@ export class AuthService {
     return sessionStorage.getItem(AUTH_TOKEN_KEY) ?? '';
   }
 
+  getCurrentUser(): User | null {
+    const storedUser = sessionStorage.getItem(AUTH_USER_KEY);
+
+    if (storedUser) {
+      try {
+        return JSON.parse(storedUser) as User;
+      } catch {
+        sessionStorage.removeItem(AUTH_USER_KEY);
+      }
+    }
+
+    const decodedUser = this.decodeUserFromToken(this.getToken());
+
+    if (decodedUser) {
+      sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(decodedUser));
+    }
+
+    return decodedUser;
+  }
+
   clearToken(): void {
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
     sessionStorage.removeItem(AUTH_TOKEN_TYPE_KEY);
     sessionStorage.removeItem(AUTH_EXPIRES_IN_KEY);
+    sessionStorage.removeItem(AUTH_USER_KEY);
   }
 
   isAuthenticated(): boolean {
@@ -105,5 +135,37 @@ export class AuthService {
     // Preferir accessToken (formato estándar del backend Filmax)
     // Luego intentar token, jwt para retrocompatibilidad
     return response.accessToken ?? response.token ?? response.jwt ?? '';
+  }
+
+  private decodeUserFromToken(token: string): User | null {
+    const [, payload] = token.split('.');
+
+    if (!payload || typeof globalThis.atob !== 'function') {
+      return null;
+    }
+
+    try {
+      const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const paddedPayload = normalizedPayload.padEnd(Math.ceil(normalizedPayload.length / 4) * 4, '=');
+      const decoded = JSON.parse(globalThis.atob(paddedPayload)) as {
+        sub?: string;
+        id?: string;
+        name?: string;
+        email?: string;
+      };
+      const id = decoded.sub ?? decoded.id;
+
+      if (!id && !decoded.email) {
+        return null;
+      }
+
+      return {
+        id,
+        name: decoded.name,
+        email: decoded.email,
+      };
+    } catch {
+      return null;
+    }
   }
 }

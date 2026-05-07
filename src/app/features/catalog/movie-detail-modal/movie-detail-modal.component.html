@@ -7,10 +7,9 @@
   role="dialog"
   #modalElement
   (click)="onBackdropClick($event)"
-  (keydown.enter)="closeModal()"
-  (keydown.space)="closeModal()"
+  (keydown.escape)="closeModal()"
 >
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content">
       <!-- Header -->
       <div class="modal-header">
@@ -26,32 +25,40 @@
 
       <!-- Body -->
       <div class="modal-body" *ngIf="movie">
-        <!-- Imagen -->
-        <div class="movie-detail__image">
-          <img
-            [src]="movie.imageUrl"
-            [alt]="movie.title"
-            class="img-fluid rounded"
-          />
-        </div>
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-5">
+            <!-- Imagen -->
+            <div class="movie-detail__image">
+              <img
+                [src]="movie.imageUrl"
+                [alt]="movie.title"
+                class="img-fluid rounded"
+              />
+            </div>
 
-        <!-- Info -->
-        <div class="movie-detail__info">
-          <p class="text-muted">
-            <strong>Año:</strong> {{ movie.year }}
-          </p>
-          <p class="text-muted">
-            <strong>Calificación IMDB:</strong> {{ movie.rating }}/10
-          </p>
-        </div>
+            <!-- Info -->
+            <div class="movie-detail__info">
+              <p class="text-muted">
+                <strong>Año:</strong> {{ movie.year }}
+              </p>
+              <p class="text-muted">
+                <strong>Calificación IMDB:</strong> {{ movie.rating }}/10
+              </p>
+            </div>
 
-        <!-- Rating Section -->
-        <div class="movie-detail__rating">
-          <h6>Tu Calificación</h6>
-          <app-rating-stars
-            [initialRating]="selectedRating"
-            (ratingChange)="onRatingChange($event)"
-          ></app-rating-stars>
+            <!-- Rating Section -->
+            <div class="movie-detail__rating">
+              <h6>Tu Calificación</h6>
+              <app-rating-stars
+                [initialRating]="selectedRating"
+                (ratingChange)="onRatingChange($event)"
+              ></app-rating-stars>
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <app-movie-comments [movie]="movie"></app-movie-comments>
+          </div>
         </div>
       </div>
 

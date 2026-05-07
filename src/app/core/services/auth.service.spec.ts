@@ -62,12 +62,36 @@ describe('AuthService - FR-06.3 persistencia de token', () => {
   });
 
   it('limpia token con clearToken', () => {
-    service.saveTokenFromLogin({ token: 'to-clear' });
+    service.saveTokenFromLogin({
+      token: 'to-clear',
+      user: { id: 'user-1', name: 'Test User', email: 'test@mail.com' },
+    });
 
     service.clearToken();
 
     expect(service.getToken()).toBe('');
+    expect(service.getCurrentUser()).toBeNull();
     expect(service.isAuthenticated()).toBeFalse();
+  });
+
+  it('guarda el usuario recibido en login', () => {
+    service.saveTokenFromLogin({
+      accessToken: 'access-123',
+      user: { id: 'user-2', name: 'Jane Doe', email: 'jane@mail.com' },
+    });
+
+    expect(service.getCurrentUser()).toEqual({ id: 'user-2', name: 'Jane Doe', email: 'jane@mail.com' });
+  });
+
+  it('obtiene usuario desde payload del token cuando no viene en respuesta', () => {
+    const payload = btoa(JSON.stringify({ sub: 'user-3', name: 'Token User', email: 'token@mail.com' }))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    service.saveTokenFromLogin({ accessToken: `header.${payload}.signature` });
+
+    expect(service.getCurrentUser()).toEqual({ id: 'user-3', name: 'Token User', email: 'token@mail.com' });
   });
 
   it('hace POST a /auth/login con el payload recibido', () => {

@@ -1,0 +1,140 @@
+<section class="comments-panel" *ngIf="movie">
+  <header class="comments-panel__header">
+    <div>
+      <p class="comments-panel__eyebrow">Opiniones</p>
+      <h3>Comentarios</h3>
+    </div>
+    <span class="comments-panel__count">{{ total }}</span>
+  </header>
+
+  <form class="comment-composer" [formGroup]="commentForm" (ngSubmit)="submitComment()">
+    <div class="comment-avatar" aria-hidden="true">{{ currentUserInitials }}</div>
+
+    <div class="comment-composer__body">
+      <textarea
+        formControlName="text"
+        rows="3"
+        maxlength="500"
+        placeholder="Comparte tu opinión"
+        aria-label="Comentario"
+      ></textarea>
+
+      <div class="comment-composer__meta">
+        <div class="comment-stars" role="radiogroup" aria-label="Calificación del comentario">
+          <button
+            type="button"
+            *ngFor="let star of stars"
+            class="comment-stars__button"
+            [class.is-active]="star <= selectedRating"
+            [attr.aria-checked]="star === selectedRating"
+            [attr.aria-label]="'Calificar ' + star + ' de 5'"
+            role="radio"
+            (click)="setDraftRating(star)"
+          >
+            <i [class]="icons.star" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <span class="comment-composer__counter" [class.is-low]="remainingCharacters < 50">
+          {{ remainingCharacters }}
+        </span>
+
+        <button type="submit" class="comment-composer__send" [disabled]="!canSubmit">
+          <i [class]="icons.send" aria-hidden="true"></i>
+          <span>{{ isSubmitting ? 'Publicando...' : 'Publicar' }}</span>
+        </button>
+      </div>
+
+      <p class="comments-feedback is-error" *ngIf="commentForm.controls.text.touched && commentForm.controls.text.invalid">
+        Escribe un comentario de máximo 500 caracteres.
+      </p>
+      <p class="comments-feedback is-error" *ngIf="submitError">{{ submitError }}</p>
+    </div>
+  </form>
+
+  <div class="comments-panel__state" *ngIf="state === 'loading'">
+    Cargando comentarios...
+  </div>
+
+  <div class="comments-panel__empty" *ngIf="state === 'success' && comments.length === 0">
+    <i [class]="icons.chat" aria-hidden="true"></i>
+    <p>Sin comentarios todavía.</p>
+  </div>
+
+  <p class="comments-feedback is-error" *ngIf="loadError">{{ loadError }}</p>
+  <p class="comments-feedback is-error" *ngIf="actionError">{{ actionError }}</p>
+
+  <div class="comments-thread" *ngIf="comments.length > 0">
+    <article class="comment-item" *ngFor="let comment of comments">
+      <div class="comment-avatar" aria-hidden="true">{{ getInitials(comment.author.name || comment.author.email) }}</div>
+
+      <div class="comment-item__body">
+        <div class="comment-item__topline">
+          <div class="comment-item__author">
+            <strong>{{ comment.author.name || 'Usuario Filmax' }}</strong>
+            <span>{{ formatRelativeDate(comment.createdAt) }}</span>
+          </div>
+
+          <div class="comment-item__rating" [attr.aria-label]="'Calificación ' + comment.rating + ' de 5'">
+            <ng-container *ngFor="let star of stars">
+              <i [class]="icons.star" [class.is-empty]="!isStarFilled(comment.rating, star)" aria-hidden="true"></i>
+            </ng-container>
+          </div>
+        </div>
+
+        <ng-container *ngIf="editingCommentId !== comment.id; else editMode">
+          <p class="comment-item__text">{{ comment.text }}</p>
+
+          <div class="comment-item__actions" *ngIf="canManage(comment)">
+            <button type="button" (click)="startEdit(comment)">
+              <i [class]="icons.pencil" aria-hidden="true"></i>
+              Editar
+            </button>
+            <button type="button" class="is-danger" (click)="deleteComment(comment)" [disabled]="isUpdating">
+              <i [class]="icons.trash" aria-hidden="true"></i>
+              Eliminar
+            </button>
+          </div>
+        </ng-container>
+
+        <ng-template #editMode>
+          <div class="comment-edit" [formGroup]="editForm">
+            <textarea formControlName="text" rows="3" maxlength="500" aria-label="Editar comentario"></textarea>
+
+            <div class="comment-composer__meta">
+              <div class="comment-stars" role="radiogroup" aria-label="Editar calificación">
+                <button
+                  type="button"
+                  *ngFor="let star of stars"
+                  class="comment-stars__button"
+                  [class.is-active]="star <= editRating"
+                  [attr.aria-checked]="star === editRating"
+                  [attr.aria-label]="'Calificar ' + star + ' de 5'"
+                  role="radio"
+                  (click)="setEditRating(star)"
+                >
+                  <i [class]="icons.star" aria-hidden="true"></i>
+                </button>
+              </div>
+
+              <span class="comment-composer__counter" [class.is-low]="editRemainingCharacters < 50">
+                {{ editRemainingCharacters }}
+              </span>
+
+              <button type="button" class="comment-edit__cancel" (click)="cancelEdit()">
+                <i [class]="icons.x" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="comment-composer__send" (click)="saveEdit(comment)" [disabled]="editForm.invalid || editRating === 0 || isUpdating">
+                Guardar
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </article>
+  </div>
+
+  <button type="button" class="comments-panel__more" *ngIf="canLoadMore" (click)="loadMore()" [disabled]="isLoadingMore">
+    {{ isLoadingMore ? 'Cargando...' : 'Ver más comentarios' }}
+  </button>
+</section>
