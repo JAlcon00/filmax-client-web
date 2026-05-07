@@ -74,6 +74,10 @@ export class RatingsService {
     return this.ratings$.value.find(r => r.contentId === contentId);
   }
 
+  getRatingByExternalId(externalId: string): Rating | undefined {
+    return this.ratings$.value.find(r => r.externalId === externalId);
+  }
+
   /**
    * Guarda o actualiza la calificación de una película
    */

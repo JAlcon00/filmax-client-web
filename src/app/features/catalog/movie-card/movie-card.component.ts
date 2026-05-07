@@ -4,6 +4,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
 
 export interface MovieCardViewModel {
   externalId?: string;
+  contentId?: string;
   type?: 'movie' | 'series';
   title: string;
   year: number;

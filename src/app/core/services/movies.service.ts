@@ -5,7 +5,8 @@ import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface Movie {
-  id: string;
+  id?: string;
+  contentId?: string;
   externalId?: string;
   title: string;
   description?: string;
@@ -30,6 +31,8 @@ export interface SearchResponse {
 
 export interface MovieViewModel {
   id: string;
+  contentId?: string;
+  externalId?: string;
   title: string;
   description: string;
   genre: string[];
@@ -94,8 +97,12 @@ export class MoviesService {
    * Normaliza campos de una película con fallbacks seguros
    */
   private normalizeMovie(m: Partial<Movie>): MovieViewModel {
+    const externalId = m.externalId ?? m.id ?? 'unknown-id';
+
     return {
-      id: m.id ?? m.externalId ?? 'unknown-id',
+      id: m.id ?? externalId,
+      contentId: m.contentId,
+      externalId,
       title: m.title ?? 'Untitled',
       description: m.description ?? 'Sin descripción disponible',
       genre: (m.genre && m.genre.length > 0) ? m.genre : ['Sin especificar'],
