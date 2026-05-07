@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface RegisterRequest {
@@ -48,6 +48,9 @@ const AUTH_USER_KEY = 'filmax_auth_user';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly authUrl = `${environment.apiBaseUrl}/auth`;
+  // Observable auth state to allow components to react to login/logout
+  private readonly _authState = new BehaviorSubject<boolean>(this.isAuthenticated());
+  readonly authState$ = this._authState.asObservable();
 
   register(payload: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.authUrl}/register`, payload);
@@ -87,6 +90,9 @@ export class AuthService {
       sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
     }
 
+    // Notify subscribers that authentication state changed
+    this._authState.next(true);
+
     return token;
   }
 
@@ -119,6 +125,9 @@ export class AuthService {
     sessionStorage.removeItem(AUTH_TOKEN_TYPE_KEY);
     sessionStorage.removeItem(AUTH_EXPIRES_IN_KEY);
     sessionStorage.removeItem(AUTH_USER_KEY);
+
+    // Notify subscribers that authentication was cleared
+    this._authState.next(false);
   }
 
   isAuthenticated(): boolean {
