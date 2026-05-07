@@ -19,6 +19,27 @@ describe('AppComponent - FR-06.4 cierre de sesion', () => {
     }).compileComponents();
 
     authServiceMock.clearToken.calls.reset();
+    authServiceMock.isAuthenticated.calls.reset();
+  });
+
+  it('oculta enlace Auth cuando hay sesion activa', () => {
+    authServiceMock.isAuthenticated.and.returnValue(true);
+    const fixture = TestBed.createComponent(AppComponent);
+
+    fixture.detectChanges();
+
+    const authLink = fixture.nativeElement.querySelector('a[routerLink="/auth"]');
+    expect(authLink).toBeNull();
+  });
+
+  it('muestra enlace Auth cuando no hay sesion activa', () => {
+    authServiceMock.isAuthenticated.and.returnValue(false);
+    const fixture = TestBed.createComponent(AppComponent);
+
+    fixture.detectChanges();
+
+    const authLink = fixture.nativeElement.querySelector('a[routerLink="/auth"]');
+    expect(authLink).not.toBeNull();
   });
 
   it('al cerrar sesion limpia token y redirige a /auth', () => {

@@ -16,6 +16,7 @@ import { environment } from '../environments/environment';
 
           <nav *ngIf="!isAuthRoute" class="flex items-center gap-2">
             <a
+              *ngIf="!authService.isAuthenticated()"
               routerLink="/auth"
               routerLinkActive="bg-white/20 text-white"
               class="rounded-xl px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
