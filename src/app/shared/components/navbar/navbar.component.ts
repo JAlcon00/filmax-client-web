@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { APP_ICONS } from '../../icons/app-icons';
 import { AuthService } from '../../../core/services/auth.service';
@@ -7,7 +8,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })

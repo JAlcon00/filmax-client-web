@@ -1,0 +1,26 @@
+<div class="favorites-container">
+  <h1>Mis Películas Calificadas</h1>
+
+  <div class="ratings-list" *ngIf="ratings.length > 0; else noRatings">
+    <div class="rating-item" *ngFor="let rating of ratings">
+      <div class="movie-poster">
+        <img [src]="rating.posterUrl || '/assets/no-poster.png'" [alt]="rating.title" />
+      </div>
+      <div class="movie-info">
+        <h3>{{ rating.title }}</h3>
+        <p *ngIf="rating.type">{{ rating.type === 'movie' ? 'Película' : 'Serie' }}</p>
+        <div class="rating-stars">
+          <span class="stars" [attr.data-rating]="rating.rating">
+            ★★★★★
+          </span>
+          <span class="rating-value">{{ rating.rating }}/5</span>
+        </div>
+        <p class="timestamp">Calificado el {{ rating.timestamp | date:'dd/MM/yyyy' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noRatings>
+    <p class="no-ratings">Aún no has calificado ninguna película.</p>
+  </ng-template>
+</div>
