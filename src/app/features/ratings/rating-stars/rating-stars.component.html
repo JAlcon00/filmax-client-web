@@ -12,6 +12,7 @@
         (click)="onStarClick(index + 1)"
         [attr.aria-label]="'Calificar ' + (index + 1) + ' de 5'"
         [title]="'Calificar ' + (index + 1) + ' de 5'"
+        [attr.data-cy]="'rating-star-' + (index + 1)"
       >
         <i [class]="icons.star" aria-hidden="true"></i>
       </button>

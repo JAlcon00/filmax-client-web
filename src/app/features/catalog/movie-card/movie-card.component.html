@@ -1,5 +1,6 @@
 <article class="movie-card" (click)="openModal()" role="button" tabindex="0"
   [attr.aria-label]="'Ver detalle de ' + movie.title"
+  data-cy="movie-card"
   (keydown.enter)="openModal()" (keydown.space)="openModal()">
   <button
     class="movie-card__favorite"
@@ -7,6 +8,7 @@
     aria-label="Agregar a favoritos (pendiente)"
     title="Favorito (pendiente)"
     (click)="$event.stopPropagation()"
+    data-cy="movie-card-favorite"
   >
     <i [class]="icons.heart" aria-hidden="true"></i>
   </button>

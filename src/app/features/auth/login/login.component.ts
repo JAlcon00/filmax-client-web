@@ -54,6 +54,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
               autocomplete="email"
               placeholder="correo@ejemplo.com"
               class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/30"
+              data-cy="login-email"
             />
             <p *ngIf="isInvalid('email')" class="mt-2 inline-flex items-center gap-2 text-sm text-rose-300">
               <i [class]="icons.exclamationCircle" aria-hidden="true"></i>
@@ -73,6 +74,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
               autocomplete="current-password"
               placeholder="Minimo 8 caracteres"
               class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/30"
+              data-cy="login-password"
             />
             <p *ngIf="isInvalid('password')" class="mt-2 inline-flex items-center gap-2 text-sm text-rose-300">
               <i [class]="icons.exclamationCircle" aria-hidden="true"></i>
@@ -84,6 +86,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
             type="submit"
             class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-sky-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
             [disabled]="loginForm.invalid || isSubmitting"
+            data-cy="login-submit"
           >
             <i [class]="isSubmitting ? icons.arrowRepeat + ' animate-spin' : icons.signIn" aria-hidden="true"></i>
             {{ isSubmitting ? 'Validando credenciales...' : 'Iniciar sesion' }}

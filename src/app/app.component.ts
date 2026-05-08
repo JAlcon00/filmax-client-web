@@ -13,7 +13,7 @@ import { APP_ICONS } from './shared/icons/app-icons';
     <div class="min-h-screen bg-slate-950 text-white">
       <header class="sticky top-0 z-10 border-b border-white/10 bg-slate-950/90 backdrop-blur">
         <div class="mx-auto flex w-full max-w-6xl items-center px-4 py-4 sm:px-6 lg:px-8" [class.justify-center]="isAuthRoute" [class.justify-between]="!isAuthRoute">
-          <a routerLink="/catalog" class="inline-flex items-center gap-2 text-lg font-bold tracking-wide text-cyan-300" aria-label="Ir al catálogo de Filmax">
+          <a routerLink="/catalog" class="inline-flex items-center gap-2 text-lg font-bold tracking-wide text-cyan-300" aria-label="Ir al catálogo de Filmax" data-cy="brand-link">
             <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 text-base" aria-hidden="true">
               <i [class]="icons.logo"></i>
             </span>
@@ -26,6 +26,7 @@ import { APP_ICONS } from './shared/icons/app-icons';
               routerLink="/auth"
               routerLinkActive="bg-white/20 text-white"
               class="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
+              data-cy="nav-auth"
             >
               <i [class]="icons.signIn" aria-hidden="true"></i>
               Auth
@@ -34,6 +35,7 @@ import { APP_ICONS } from './shared/icons/app-icons';
               routerLink="/catalog"
               routerLinkActive="bg-white/20 text-white"
               class="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
+              data-cy="nav-catalog"
             >
               <i [class]="icons.catalog" aria-hidden="true"></i>
               Catalogo
@@ -43,6 +45,7 @@ import { APP_ICONS } from './shared/icons/app-icons';
               routerLink="/favorites"
               routerLinkActive="bg-white/20 text-white"
               class="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
+              data-cy="nav-favorites"
             >
               <i [class]="icons.heartFill" aria-hidden="true"></i>
               Favoritos
@@ -52,6 +55,7 @@ import { APP_ICONS } from './shared/icons/app-icons';
               type="button"
               class="ml-2 inline-flex items-center gap-2 rounded-xl border border-rose-400/40 px-3 py-2 text-sm font-semibold text-rose-200 transition hover:bg-rose-400/20"
               (click)="logout()"
+              data-cy="nav-logout"
             >
               <i [class]="icons.signOut" aria-hidden="true"></i>
               Cerrar sesion

@@ -16,8 +16,9 @@
         [formControl]="searchControl"
         placeholder="Busca una película o serie"
         class="catalog-search__input"
+        data-cy="catalog-search-input"
       />
-      <button type="submit" class="catalog-search__button">
+      <button type="submit" class="catalog-search__button" data-cy="catalog-search-submit">
         <i [class]="icons.search" aria-hidden="true"></i>
         Buscar
       </button>

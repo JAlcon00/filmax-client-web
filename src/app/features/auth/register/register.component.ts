@@ -53,6 +53,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
               autocomplete="name"
               placeholder="Tu nombre"
               class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+              data-cy="register-name"
             />
             <p *ngIf="isInvalid('name')" class="mt-2 inline-flex items-center gap-2 text-sm text-rose-300">
               <i [class]="icons.exclamationCircle" aria-hidden="true"></i>
@@ -72,6 +73,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
               autocomplete="email"
               placeholder="correo@ejemplo.com"
               class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+              data-cy="register-email"
             />
             <p *ngIf="isInvalid('email')" class="mt-2 inline-flex items-center gap-2 text-sm text-rose-300">
               <i [class]="icons.exclamationCircle" aria-hidden="true"></i>
@@ -91,6 +93,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
               autocomplete="new-password"
               placeholder="Mínimo 8 caracteres"
               class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+              data-cy="register-password"
             />
             <p *ngIf="isInvalid('password')" class="mt-2 inline-flex items-center gap-2 text-sm text-rose-300">
               <i [class]="icons.exclamationCircle" aria-hidden="true"></i>
@@ -102,6 +105,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
             type="submit"
             class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
             [disabled]="registerForm.invalid || isSubmitting"
+            data-cy="register-submit"
           >
             <i [class]="isSubmitting ? icons.arrowRepeat + ' animate-spin' : icons.userPlus" aria-hidden="true"></i>
             {{ isSubmitting ? 'Creando cuenta...' : 'Crear cuenta' }}
