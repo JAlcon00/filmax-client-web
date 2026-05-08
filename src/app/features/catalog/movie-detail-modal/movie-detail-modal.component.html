@@ -40,9 +40,12 @@
             <!-- Imagen -->
             <div class="movie-detail__image">
               <img
-                [src]="movie.imageUrl"
+                [src]="movie.imageUrl || fallbackPoster"
                 [alt]="movie.title"
                 class="img-fluid rounded"
+                decoding="async"
+                referrerpolicy="no-referrer"
+                (error)="onPosterError($event)"
               />
             </div>
 

@@ -21,6 +21,7 @@ export class MovieDetailModalComponent implements OnInit, OnChanges {
   @ViewChild('modalElement') modalElement?: ElementRef<HTMLDivElement>;
 
   protected readonly icons = APP_ICONS;
+  protected readonly fallbackPoster = 'assets/poster-placeholder.svg';
   protected selectedRating: number = 0;
   protected isSubmitting = false;
 
@@ -102,5 +103,15 @@ export class MovieDetailModalComponent implements OnInit, OnChanges {
     if (event.target === event.currentTarget) {
       this.closeModal();
     }
+  }
+
+  protected onPosterError(event: Event): void {
+    const img = event.target as HTMLImageElement | null;
+
+    if (!img || img.src.endsWith(this.fallbackPoster)) {
+      return;
+    }
+
+    img.src = this.fallbackPoster;
   }
 }

@@ -179,6 +179,54 @@ describe('MoviesService - [FR-02.1] Probar búsquedas con varios términos', () 
         req.flush(mock);
       });
 
+      it('debe normalizar `posterUrl` del contrato real del backend', () => {
+        const term = 'posterUrlField';
+        const mock: SearchResponse = {
+          items: [
+            {
+              externalId: 'tt0133093',
+              title: 'The Matrix',
+              posterUrl: 'http://example.com/matrix.jpg',
+            }
+          ]
+        };
+
+        service.searchMoviesSafe(term).subscribe((res) => {
+          expect(res.status).toBe('ok');
+          expect(res.items[0].poster).toBe('https://example.com/matrix.jpg');
+        });
+
+        const req = httpMock.expectOne((r) => r.url === `${moviesUrl}/search` && r.params.get('query') === term);
+        req.flush(mock);
+      });
+
+      it('debe aceptar variantes de imagen usadas por APIs externas', () => {
+        const term = 'nestedImage';
+        const mock: any = {
+          items: [
+            {
+              externalId: 'tt-nested',
+              title: 'Nested Image Movie',
+              primaryImage: { url: '//images.example.com/nested.jpg' },
+            },
+            {
+              externalId: 'tt-relative',
+              title: 'Relative Image Movie',
+              imageUrl: 'uploads/relative.jpg',
+            }
+          ]
+        };
+
+        service.searchMoviesSafe(term).subscribe((res) => {
+          expect(res.status).toBe('ok');
+          expect(res.items[0].poster).toBe('https://images.example.com/nested.jpg');
+          expect(res.items[1].poster).toBe(`${environment.apiBaseUrl}/uploads/relative.jpg`);
+        });
+
+        const req = httpMock.expectOne((r) => r.url === `${moviesUrl}/search` && r.params.get('query') === term);
+        req.flush(mock);
+      });
+
       it('debe devolver status empty cuando no hay resultados', () => {
         const term = 'noResults';
         const mock: any = { data: [] };
