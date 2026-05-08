@@ -1,10 +1,12 @@
 <div class="rating-stars">
-  <div class="rating-stars__container">
+  <div class="rating-stars__container" role="radiogroup" aria-label="Seleccionar calificación">
     <ng-container *ngFor="let _ of [1, 2, 3, 4, 5]; let index = index">
       <button
         type="button"
         class="rating-stars__star"
+        role="radio"
         [class.is-filled]="isStarFilled(index)"
+        [attr.aria-checked]="selectedRating === index + 1"
         (mouseenter)="onStarHover(index + 1)"
         (mouseleave)="onStarLeave()"
         (click)="onStarClick(index + 1)"
@@ -16,9 +18,11 @@
     </ng-container>
   </div>
   <p class="rating-stars__label" *ngIf="selectedRating > 0">
+    <i [class]="icons.checkCircle" aria-hidden="true"></i>
     Tu calificación: <strong>{{ selectedRating }} de 5</strong>
   </p>
   <p class="rating-stars__label" *ngIf="selectedRating === 0">
+    <i [class]="icons.star" aria-hidden="true"></i>
     Selecciona una calificación
   </p>
 </div>

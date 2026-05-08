@@ -22,9 +22,12 @@
 }
 
 .fm-footer__nav a {
+	align-items: center;
 	color: var(--color-text-primary);
+	display: inline-flex;
 	font-size: 0.88rem;
 	font-weight: 800;
+	gap: 0.4rem;
 	text-decoration: none;
 }
 
@@ -34,8 +37,11 @@
 }
 
 .fm-footer__copy {
+	align-items: center;
 	color: var(--color-text-secondary);
+	display: inline-flex;
 	font-size: 0.9rem;
+	gap: 0.35rem;
 	margin: 0;
 }
 

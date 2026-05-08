@@ -10,8 +10,14 @@
         </a>
 
         <nav class="fm-menu" aria-label="Navegacion principal">
-          <a routerLink="/catalog" class="fm-menu__link">PELICULAS</a>
-          <a routerLink="/favorites" class="fm-menu__link">FAVORITOS</a>
+          <a routerLink="/catalog" class="fm-menu__link">
+            <i [class]="icons.catalog" aria-hidden="true"></i>
+            PELICULAS
+          </a>
+          <a routerLink="/favorites" class="fm-menu__link">
+            <i [class]="icons.heartFill" aria-hidden="true"></i>
+            FAVORITOS
+          </a>
         </nav>
       </div>
 
@@ -27,7 +33,7 @@
         </label>
 
         <button type="button" class="fm-profile-btn" aria-label="Perfil de usuario">
-          <i [class]="icons.user"></i>
+          <i [class]="icons.user" aria-hidden="true"></i>
         </button>
       </div>
     </div>

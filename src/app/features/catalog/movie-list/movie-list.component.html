@@ -1,6 +1,9 @@
 <section class="movie-list-wrap">
   <header class="catalog-hero">
-    <p class="catalog-hero__eyebrow">Coleccion destacada</p>
+    <p class="catalog-hero__eyebrow">
+      <i [class]="icons.collection" aria-hidden="true"></i>
+      Coleccion destacada
+    </p>
     <h1>Peliculas y series listas para descubrir</h1>
     <p class="catalog-hero__text">
       Explora un catalogo visual con tarjetas limpias, favoritos y una experiencia pensada para consumir rapido.
@@ -15,6 +18,7 @@
         class="catalog-search__input"
       />
       <button type="submit" class="catalog-search__button">
+        <i [class]="icons.search" aria-hidden="true"></i>
         Buscar
       </button>
     </form>
@@ -33,10 +37,11 @@
   <!-- Empty State -->
   <div *ngIf="state === LoadingState.Empty" class="movie-list-empty" role="status" aria-live="polite">
     <div class="empty-state">
-      <i [class]="icons.search" class="empty-state__icon" aria-hidden="true"></i>
+      <i [class]="icons.search + ' empty-state__icon'" aria-hidden="true"></i>
       <h2 class="empty-state__title">Sin resultados</h2>
       <p class="empty-state__text">No hay películas disponibles en este momento.</p>
       <button type="button" class="empty-state__retry" (click)="onRetry()">
+        <i [class]="icons.arrowClockwise" aria-hidden="true"></i>
         Reintentar
       </button>
     </div>
@@ -58,6 +63,7 @@
       [disabled]="currentPage === 1"
       (click)="previousPage()"
     >
+      <i [class]="icons.chevronLeft" aria-hidden="true"></i>
       Anterior
     </button>
 
@@ -79,6 +85,7 @@
       (click)="nextPage()"
     >
       Siguiente
+      <i [class]="icons.chevronRight" aria-hidden="true"></i>
     </button>
   </nav>
 

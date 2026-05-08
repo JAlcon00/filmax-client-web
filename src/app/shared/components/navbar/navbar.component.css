@@ -69,10 +69,13 @@
 }
 
 .fm-menu__link {
+	align-items: center;
 	border-bottom: 2px solid transparent;
 	color: var(--color-text-primary);
+	display: inline-flex;
 	font-size: 0.93rem;
 	font-weight: 800;
+	gap: 0.4rem;
 	letter-spacing: 0.03em;
 	padding: 0.35rem 0.15rem;
 	text-decoration: none;
