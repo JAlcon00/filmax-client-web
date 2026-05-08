@@ -26,7 +26,7 @@ export class MovieCardComponent {
 
   readonly icons = APP_ICONS;
   readonly stars = [1, 2, 3, 4, 5];
-  private readonly fallbackPoster = 'assets/poster-placeholder.svg';
+  protected readonly fallbackPoster = 'assets/poster-placeholder.svg';
 
   get starCount(): number {
     return Math.max(0, Math.min(5, Math.round(this.movie.rating)));

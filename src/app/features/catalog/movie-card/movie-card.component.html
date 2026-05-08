@@ -14,10 +14,12 @@
   </button>
 
   <img
-    [src]="movie.imageUrl"
+    [src]="movie.imageUrl || fallbackPoster"
     [alt]="movie.title"
     class="movie-card__poster"
+    decoding="async"
     loading="lazy"
+    referrerpolicy="no-referrer"
     (error)="onPosterError($event)"
   />
 

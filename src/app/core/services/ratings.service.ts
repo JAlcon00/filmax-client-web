@@ -31,6 +31,7 @@ export interface RatingResponse {
   comment?: string | null;
   userId: string;
   contentId: string;
+  posterUrl?: string | null;
   createdAt: string;
   updatedAt: string;
   content?: {
@@ -38,7 +39,9 @@ export interface RatingResponse {
     externalId: string;
     title: string;
     type: 'movie' | 'series';
+    poster?: string | null;
     posterUrl?: string | null;
+    imageUrl?: string | null;
   };
 }
 
@@ -96,7 +99,7 @@ export class RatingsService {
           externalId: savedRating.content?.externalId,
           title: savedRating.content?.title,
           type: savedRating.content?.type,
-          posterUrl: savedRating.content?.posterUrl ?? null,
+          posterUrl: this.resolvePosterUrl(savedRating),
           movieId: contentId,
           rating: savedRating.score,
           timestamp: new Date(savedRating.updatedAt),
@@ -147,7 +150,7 @@ export class RatingsService {
           externalId: rating.content?.externalId,
           title: rating.content?.title,
           type: rating.content?.type,
-          posterUrl: rating.content?.posterUrl ?? null,
+          posterUrl: this.resolvePosterUrl(rating),
           movieId: rating.contentId,
           rating: rating.score,
           timestamp: new Date(rating.updatedAt),
@@ -159,5 +162,41 @@ export class RatingsService {
         this.ratings$.next([]);
       }
     });
+  }
+
+  private resolvePosterUrl(rating: RatingResponse): string | null {
+    const poster = rating.content?.posterUrl
+      ?? rating.content?.poster
+      ?? rating.content?.imageUrl
+      ?? rating.posterUrl
+      ?? null;
+
+    if (!poster) {
+      return null;
+    }
+
+    const trimmed = poster.trim();
+
+    if (!trimmed || ['n/a', 'null', 'undefined'].includes(trimmed.toLowerCase())) {
+      return null;
+    }
+
+    if (trimmed.startsWith('//')) {
+      return `https:${trimmed}`;
+    }
+
+    if (trimmed.startsWith('http://')) {
+      return `https://${trimmed.slice('http://'.length)}`;
+    }
+
+    if (trimmed.startsWith('/')) {
+      return new URL(trimmed, environment.apiBaseUrl).toString();
+    }
+
+    if (!/^[a-z][a-z\d+\-.]*:/i.test(trimmed) && !trimmed.startsWith('assets/')) {
+      return new URL(trimmed, `${environment.apiBaseUrl}/`).toString();
+    }
+
+    return trimmed;
   }
 }

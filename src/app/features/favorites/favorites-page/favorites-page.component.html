@@ -10,6 +10,9 @@
         <img
           [src]="rating.posterUrl || fallbackPoster"
           [alt]="rating.title || 'Poster de contenido calificado'"
+          decoding="async"
+          loading="lazy"
+          referrerpolicy="no-referrer"
           (error)="onPosterError($event)"
         />
       </div>

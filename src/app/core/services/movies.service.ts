@@ -12,10 +12,19 @@ export interface Movie {
   description?: string;
   genre?: string[];
   year?: number;
-  poster?: string;
+  poster?: string | null;
   posterUrl?: string | null;
+  image?: string | MovieImage | null;
+  imageUrl?: string | null;
+  primaryImage?: string | MovieImage | null;
+  thumbnail?: string | null;
+  poster_path?: string | null;
   rating?: number;
   type?: 'movie' | 'series';
+}
+
+interface MovieImage {
+  url?: string | null;
 }
 
 export interface SearchResponse {
@@ -107,10 +116,75 @@ export class MoviesService {
       description: m.description ?? 'Sin descripción disponible',
       genre: (m.genre && m.genre.length > 0) ? m.genre : ['Sin especificar'],
       year: m.year ?? null,
-      poster: m.poster ?? m.posterUrl ?? this.fallbackPoster,
+      poster: this.resolvePoster(m),
       rating: typeof m.rating === 'number' ? m.rating : 0,
       type: (m.type === 'series') ? 'series' : 'movie',
     };
+  }
+
+  private resolvePoster(movie: Partial<Movie>): string {
+    const posterPath = movie.poster_path
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path.startsWith('/') ? movie.poster_path : `/${movie.poster_path}`}`
+      : undefined;
+    const candidates = [
+      movie.poster,
+      movie.posterUrl,
+      movie.imageUrl,
+      this.extractImageUrl(movie.image),
+      this.extractImageUrl(movie.primaryImage),
+      movie.thumbnail,
+      posterPath,
+    ];
+
+    for (const candidate of candidates) {
+      const normalized = this.normalizePosterUrl(candidate);
+
+      if (normalized) {
+        return normalized;
+      }
+    }
+
+    return this.fallbackPoster;
+  }
+
+  private extractImageUrl(source?: string | MovieImage | null): string | undefined {
+    if (!source) {
+      return undefined;
+    }
+
+    return typeof source === 'string' ? source : source.url ?? undefined;
+  }
+
+  private normalizePosterUrl(url?: string | null): string | undefined {
+    const trimmed = url?.trim();
+
+    if (!trimmed) {
+      return undefined;
+    }
+
+    const lower = trimmed.toLowerCase();
+
+    if (lower === 'n/a' || lower === 'null' || lower === 'undefined') {
+      return undefined;
+    }
+
+    if (trimmed.startsWith('//')) {
+      return `https:${trimmed}`;
+    }
+
+    if (trimmed.startsWith('http://')) {
+      return `https://${trimmed.slice('http://'.length)}`;
+    }
+
+    if (trimmed.startsWith('/')) {
+      return new URL(trimmed, environment.apiBaseUrl).toString();
+    }
+
+    if (!/^[a-z][a-z\d+\-.]*:/i.test(trimmed) && !trimmed.startsWith('assets/')) {
+      return new URL(trimmed, `${environment.apiBaseUrl}/`).toString();
+    }
+
+    return trimmed;
   }
 
   /**
