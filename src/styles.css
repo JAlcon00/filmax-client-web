@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import './app/shared/theme/tokens.css';
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Staatliches&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Nunito:wght@400;600;700;800&family=Staatliches&display=swap');
 
 * {
   margin: 0;
@@ -16,7 +16,7 @@ body {
     radial-gradient(circle at right 15%, rgba(255, 243, 216, 0.95), transparent 28%),
     linear-gradient(180deg, #f7ecd2 0%, #f5e5c2 100%);
   color: var(--color-text-secondary);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Roboto', 'Nunito', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
