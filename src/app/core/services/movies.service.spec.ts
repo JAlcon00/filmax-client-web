@@ -492,3 +492,91 @@ describe('MoviesService - [FR-02.2] Verificar estructura real de respuesta y nor
     req.flush(mock);
   });
 });
+
+describe('MoviesService - Fuzzy Matching (Búsqueda mejorada)', () => {
+  let service: MoviesService;
+  let httpMock: HttpTestingController;
+  const moviesUrl = `${environment.apiBaseUrl}/movies`;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [MoviesService]
+    });
+    service = TestBed.inject(MoviesService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('searchMoviesFuzzy debe retornar películas ordenadas por relevancia', (done) => {
+    const term = 'Batman';
+    const mock: any = {
+      data: [
+        { id: '1', title: 'Batman Begins', description: 'Un héroe del oscuro' },
+        { id: '2', title: 'Dark Knight', description: 'Batman en Gotham' },
+        { id: '3', title: 'Superman', description: 'No es Batman' }
+      ]
+    };
+
+    service.searchMoviesFuzzy(term).subscribe((res) => {
+      expect(res.status).toBe('ok');
+      expect(res.items.length).toBeGreaterThan(0);
+      // Batman Begins debería venir primero (contiene "Batman" en título)
+      expect(res.items[0].title).toContain('Batman');
+      done();
+    });
+
+    const req = httpMock.expectOne((r) => r.url === `${moviesUrl}/search` && r.params.get('limit') === '100');
+    req.flush(mock);
+  });
+
+  it('searchMoviesFuzzy debe filtrar resultados por relevancia mínima', (done) => {
+    const term = 'Inception';
+    const mock: any = {
+      data: [
+        { id: '1', title: 'Inception', description: 'Un sueño dentro de otro' },
+        { id: '2', title: 'Random Movie 1', description: 'Totalmente diferente' }
+      ]
+    };
+
+    service.searchMoviesFuzzy(term).subscribe((res) => {
+      expect(res.status).toBe('ok');
+      expect(res.items.length).toBe(1);
+      expect(res.items[0].title).toBe('Inception');
+      done();
+    });
+
+    const req = httpMock.expectOne((r) => r.url === `${moviesUrl}/search`);
+    req.flush(mock);
+  });
+
+  it('searchMoviesFuzzy debe retornar status empty si no hay resultados relevantes', (done) => {
+    const term = 'XYZ12345';
+    const mock: any = { data: [] };
+
+    service.searchMoviesFuzzy(term).subscribe((res) => {
+      expect(res.status).toBe('empty');
+      expect(res.items.length).toBe(0);
+      done();
+    });
+
+    const req = httpMock.expectOne((r) => r.url === `${moviesUrl}/search`);
+    req.flush(mock);
+  });
+
+  it('searchMoviesFuzzy debe manejar errores correctamente', (done) => {
+    const term = 'error-test';
+
+    service.searchMoviesFuzzy(term).subscribe((res) => {
+      expect(res.status).toBe('error');
+      expect(res.items.length).toBe(0);
+      done();
+    });
+
+    const req = httpMock.expectOne((r) => r.url === `${moviesUrl}/search`);
+    req.error(new ErrorEvent('network'), { status: 500 });
+  });
+});
