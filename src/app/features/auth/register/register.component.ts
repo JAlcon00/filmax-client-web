@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { APP_ICONS } from '../../../shared/icons/app-icons';
 
 @Component({
   selector: 'app-register',
@@ -22,9 +23,18 @@ import { AuthService } from '../../../core/services/auth.service';
           </p>
 
           <ul class="mt-8 space-y-3 text-sm text-slate-300">
-            <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-cyan-400"></span> Validación básica para nombre, correo y contraseña.</li>
-            <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-cyan-400"></span> Mensajes claros cuando un campo es inválido.</li>
-            <li class="flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-cyan-400"></span> Envío al endpoint de backend para crear usuario.</li>
+            <li class="flex items-center gap-3">
+              <i [class]="icons.personBadge + ' text-cyan-300'" aria-hidden="true"></i>
+              Validación básica para nombre, correo y contraseña.
+            </li>
+            <li class="flex items-center gap-3">
+              <i [class]="icons.exclamationCircle + ' text-cyan-300'" aria-hidden="true"></i>
+              Mensajes claros cuando un campo es inválido.
+            </li>
+            <li class="flex items-center gap-3">
+              <i [class]="icons.send + ' text-cyan-300'" aria-hidden="true"></i>
+              Envío al endpoint de backend para crear usuario.
+            </li>
           </ul>
         </div>
       </div>
@@ -32,7 +42,10 @@ import { AuthService } from '../../../core/services/auth.service';
       <div class="bg-slate-950/80 px-6 py-10 sm:px-8 sm:py-12 lg:px-12">
         <form class="space-y-5" [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
           <div>
-            <label for="name" class="mb-2 block text-sm font-medium text-slate-200">Nombre completo</label>
+            <label for="name" class="mb-2 inline-flex items-center gap-2 text-sm font-medium text-slate-200">
+              <i [class]="icons.user" aria-hidden="true"></i>
+              Nombre completo
+            </label>
             <input
               id="name"
               type="text"
@@ -41,13 +54,17 @@ import { AuthService } from '../../../core/services/auth.service';
               placeholder="Tu nombre"
               class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
             />
-            <p *ngIf="isInvalid('name')" class="mt-2 text-sm text-rose-300">
+            <p *ngIf="isInvalid('name')" class="mt-2 inline-flex items-center gap-2 text-sm text-rose-300">
+              <i [class]="icons.exclamationCircle" aria-hidden="true"></i>
               El nombre es obligatorio y debe tener al menos 3 caracteres.
             </p>
           </div>
 
           <div>
-            <label for="email" class="mb-2 block text-sm font-medium text-slate-200">Correo electrónico</label>
+            <label for="email" class="mb-2 inline-flex items-center gap-2 text-sm font-medium text-slate-200">
+              <i [class]="icons.email" aria-hidden="true"></i>
+              Correo electrónico
+            </label>
             <input
               id="email"
               type="email"
@@ -56,13 +73,17 @@ import { AuthService } from '../../../core/services/auth.service';
               placeholder="correo@ejemplo.com"
               class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
             />
-            <p *ngIf="isInvalid('email')" class="mt-2 text-sm text-rose-300">
+            <p *ngIf="isInvalid('email')" class="mt-2 inline-flex items-center gap-2 text-sm text-rose-300">
+              <i [class]="icons.exclamationCircle" aria-hidden="true"></i>
               Ingresa un correo electrónico válido.
             </p>
           </div>
 
           <div>
-            <label for="password" class="mb-2 block text-sm font-medium text-slate-200">Contraseña</label>
+            <label for="password" class="mb-2 inline-flex items-center gap-2 text-sm font-medium text-slate-200">
+              <i [class]="icons.lock" aria-hidden="true"></i>
+              Contraseña
+            </label>
             <input
               id="password"
               type="password"
@@ -71,24 +92,28 @@ import { AuthService } from '../../../core/services/auth.service';
               placeholder="Mínimo 8 caracteres"
               class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
             />
-            <p *ngIf="isInvalid('password')" class="mt-2 text-sm text-rose-300">
+            <p *ngIf="isInvalid('password')" class="mt-2 inline-flex items-center gap-2 text-sm text-rose-300">
+              <i [class]="icons.exclamationCircle" aria-hidden="true"></i>
               La contraseña debe tener mínimo 8 caracteres e incluir letras y números.
             </p>
           </div>
 
           <button
             type="submit"
-            class="inline-flex w-full items-center justify-center rounded-2xl bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
             [disabled]="registerForm.invalid || isSubmitting"
           >
+            <i [class]="isSubmitting ? icons.arrowRepeat + ' animate-spin' : icons.userPlus" aria-hidden="true"></i>
             {{ isSubmitting ? 'Creando cuenta...' : 'Crear cuenta' }}
           </button>
 
-          <p *ngIf="errorMessage" class="rounded-2xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+          <p *ngIf="errorMessage" class="flex items-start gap-2 rounded-2xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+            <i [class]="icons.exclamationTriangle" aria-hidden="true"></i>
             {{ errorMessage }}
           </p>
 
-          <p *ngIf="successMessage" class="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+          <p *ngIf="successMessage" class="flex items-start gap-2 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+            <i [class]="icons.checkCircle" aria-hidden="true"></i>
             {{ successMessage }}
           </p>
         </form>
@@ -100,6 +125,7 @@ export class RegisterComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
 
+  protected readonly icons = APP_ICONS;
   protected readonly registerForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],

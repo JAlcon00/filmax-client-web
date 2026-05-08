@@ -1,12 +1,27 @@
 <footer class="fm-footer">
   <div class="fm-footer__inner">
     <nav class="fm-footer__nav" aria-label="Enlaces de pie de pagina">
-      <a href="#">SOBRE NOSOTROS</a>
-      <a href="#">CONTACTO</a>
-      <a href="#">TERMINOS</a>
-      <a href="#">POLITICA DE PRIVACIDAD</a>
+      <a href="#">
+        <i [class]="icons.people" aria-hidden="true"></i>
+        SOBRE NOSOTROS
+      </a>
+      <a href="#">
+        <i [class]="icons.envelopeAt" aria-hidden="true"></i>
+        CONTACTO
+      </a>
+      <a href="#">
+        <i [class]="icons.fileText" aria-hidden="true"></i>
+        TERMINOS
+      </a>
+      <a href="#">
+        <i [class]="icons.privacy" aria-hidden="true"></i>
+        POLITICA DE PRIVACIDAD
+      </a>
     </nav>
 
-    <p class="fm-footer__copy">Copyright {{ year }} FilMax Co.</p>
+    <p class="fm-footer__copy">
+      <i [class]="icons.copyright" aria-hidden="true"></i>
+      {{ year }} FilMax Co.
+    </p>
   </div>
 </footer>

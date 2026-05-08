@@ -1,4 +1,5 @@
 <article class="movie-card" (click)="openModal()" role="button" tabindex="0"
+  [attr.aria-label]="'Ver detalle de ' + movie.title"
   (keydown.enter)="openModal()" (keydown.space)="openModal()">
   <button
     class="movie-card__favorite"
@@ -20,7 +21,16 @@
 
   <div class="movie-card__body">
     <h3>{{ movie.title }}</h3>
-    <p class="movie-card__meta">{{ movie.year }}</p>
+    <p class="movie-card__meta">
+      <span>
+        <i [class]="icons.calendar" aria-hidden="true"></i>
+        {{ movie.year }}
+      </span>
+      <span *ngIf="movie.type">
+        <i [class]="movie.type === 'series' ? icons.collection : icons.ticket" aria-hidden="true"></i>
+        {{ movie.type === 'series' ? 'Serie' : 'Película' }}
+      </span>
+    </p>
 
     <div class="movie-card__rating" [attr.aria-label]="'Calificacion ' + movie.rating + ' de 5'">
       <ng-container *ngFor="let star of stars; trackBy: trackByStar">

@@ -72,10 +72,20 @@
 }
 
 .movie-card__meta {
+  align-items: center;
   color: #94a3b8;
+  display: flex;
+  flex-wrap: wrap;
   font-size: 0.82rem;
   font-weight: 600;
+  gap: 0.65rem;
   margin: 0.2rem 0 0.5rem;
+}
+
+.movie-card__meta span {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.28rem;
 }
 
 .movie-card__rating {

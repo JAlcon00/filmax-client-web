@@ -5,6 +5,7 @@ import { RatingStarsComponent } from '../../ratings/rating-stars/rating-stars.co
 import { RatingsService } from '../../../core/services/ratings.service';
 import { MovieCardViewModel } from '../movie-card/movie-card.component';
 import { MovieCommentsComponent } from '../movie-comments/movie-comments.component';
+import { APP_ICONS } from '../../../shared/icons/app-icons';
 
 @Component({
   selector: 'app-movie-detail-modal',
@@ -19,6 +20,7 @@ export class MovieDetailModalComponent implements OnInit, OnChanges {
   @Output() closed = new EventEmitter<void>();
   @ViewChild('modalElement') modalElement?: ElementRef<HTMLDivElement>;
 
+  protected readonly icons = APP_ICONS;
   protected selectedRating: number = 0;
   protected isSubmitting = false;
 

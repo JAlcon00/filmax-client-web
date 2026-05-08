@@ -3,6 +3,8 @@
   class="modal"
   [class.show]="isOpen"
   [attr.aria-hidden]="!isOpen"
+  [attr.aria-modal]="isOpen"
+  aria-labelledby="movie-detail-title"
   tabindex="0"
   role="dialog"
   #modalElement
@@ -13,14 +15,20 @@
     <div class="modal-content">
       <!-- Header -->
       <div class="modal-header">
-        <h5 class="modal-title">{{ movie?.title }}</h5>
+        <h5 id="movie-detail-title" class="modal-title">
+          <i [class]="icons.logo" aria-hidden="true"></i>
+          {{ movie?.title }}
+        </h5>
         <button
           type="button"
           class="btn-close"
-          aria-label="Close"
+          aria-label="Cerrar detalle"
+          title="Cerrar detalle"
           (click)="closeModal()"
           [disabled]="isSubmitting"
-        ></button>
+        >
+          <i [class]="icons.x" aria-hidden="true"></i>
+        </button>
       </div>
 
       <!-- Body -->
@@ -39,16 +47,21 @@
             <!-- Info -->
             <div class="movie-detail__info">
               <p class="text-muted">
-                <strong>Año:</strong> {{ movie.year }}
+                <i [class]="icons.calendar" aria-hidden="true"></i>
+                <span><strong>Año:</strong> {{ movie.year }}</span>
               </p>
               <p class="text-muted">
-                <strong>Calificación IMDB:</strong> {{ movie.rating }}/10
+                <i [class]="icons.star" aria-hidden="true"></i>
+                <span><strong>Calificación IMDB:</strong> {{ movie.rating }}/10</span>
               </p>
             </div>
 
             <!-- Rating Section -->
             <div class="movie-detail__rating">
-              <h6>Tu Calificación</h6>
+              <h6>
+                <i [class]="icons.bookmarkCheck" aria-hidden="true"></i>
+                Tu Calificación
+              </h6>
               <app-rating-stars
                 [initialRating]="selectedRating"
                 (ratingChange)="onRatingChange($event)"
@@ -70,6 +83,7 @@
           (click)="closeModal()"
           [disabled]="isSubmitting"
         >
+          <i [class]="icons.x" aria-hidden="true"></i>
           Cerrar
         </button>
         <button
@@ -78,6 +92,7 @@
           (click)="saveRating()"
           [disabled]="isSubmitting || selectedRating === 0"
         >
+          <i *ngIf="!isSubmitting" [class]="icons.save" aria-hidden="true"></i>
           <span *ngIf="!isSubmitting">Guardar Calificación</span>
           <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
           <span *ngIf="isSubmitting">Guardando...</span>

@@ -1,26 +1,46 @@
 <div class="favorites-container">
-  <h1>Mis Películas Calificadas</h1>
+  <h1>
+    <i [class]="icons.heartFill" aria-hidden="true"></i>
+    Mis Películas Calificadas
+  </h1>
 
   <div class="ratings-list" *ngIf="ratings.length > 0; else noRatings">
-    <div class="rating-item" *ngFor="let rating of ratings">
+    <article class="rating-item" *ngFor="let rating of ratings">
       <div class="movie-poster">
-        <img [src]="rating.posterUrl || '/assets/no-poster.png'" [alt]="rating.title" />
+        <img
+          [src]="rating.posterUrl || fallbackPoster"
+          [alt]="rating.title || 'Poster de contenido calificado'"
+          (error)="onPosterError($event)"
+        />
       </div>
       <div class="movie-info">
-        <h3>{{ rating.title }}</h3>
-        <p *ngIf="rating.type">{{ rating.type === 'movie' ? 'Película' : 'Serie' }}</p>
-        <div class="rating-stars">
-          <span class="stars" [attr.data-rating]="rating.rating">
-            ★★★★★
+        <h3>{{ rating.title || 'Contenido sin título' }}</h3>
+        <p *ngIf="rating.type" class="movie-type">
+          <i [class]="rating.type === 'movie' ? icons.ticket : icons.collection" aria-hidden="true"></i>
+          {{ rating.type === 'movie' ? 'Película' : 'Serie' }}
+        </p>
+        <div class="rating-stars" [attr.aria-label]="'Calificación ' + rating.rating + ' de 5'">
+          <span class="stars" aria-hidden="true">
+            <i
+              *ngFor="let star of stars"
+              [class]="icons.star"
+              [class.is-empty]="star > rating.rating"
+            ></i>
           </span>
           <span class="rating-value">{{ rating.rating }}/5</span>
         </div>
-        <p class="timestamp">Calificado el {{ rating.timestamp | date:'dd/MM/yyyy' }}</p>
+        <p class="timestamp">
+          <i [class]="icons.calendar" aria-hidden="true"></i>
+          Calificado el {{ rating.timestamp | date:'dd/MM/yyyy' }}
+        </p>
       </div>
-    </div>
+    </article>
   </div>
 
   <ng-template #noRatings>
-    <p class="no-ratings">Aún no has calificado ninguna película.</p>
+    <div class="no-ratings" role="status">
+      <i [class]="icons.star" aria-hidden="true"></i>
+      <p>Aún no has calificado ninguna película.</p>
+    </div>
   </ng-template>
 </div>
