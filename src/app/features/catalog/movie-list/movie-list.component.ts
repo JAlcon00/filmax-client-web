@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MovieCardComponent, MovieCardViewModel } from '../movie-card/movie-card.component';
 import { MovieDetailModalComponent } from '../movie-detail-modal/movie-detail-modal.component';
@@ -8,6 +8,7 @@ import { SkeletonCardComponent } from '../../../shared/components/skeleton-card/
 import { ErrorAlertComponent } from '../../../shared/components/error-alert/error-alert.component';
 import { LoadingState, ErrorType, AppError } from '../../../shared/types/loading-state';
 import { APP_ICONS } from '../../../shared/icons/app-icons';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-movie-list',
@@ -23,7 +24,7 @@ import { APP_ICONS } from '../../../shared/icons/app-icons';
   templateUrl: './movie-list.component.html',
   styleUrls: ['./movie-list.component.css']
 })
-export class MovieListComponent implements OnInit {
+export class MovieListComponent implements OnInit, OnDestroy {
   private readonly moviesService = inject(MoviesService);
   private readonly titleCollator = new Intl.Collator('es', {
     numeric: true,
@@ -33,6 +34,7 @@ export class MovieListComponent implements OnInit {
   protected readonly LoadingState = LoadingState;
   protected readonly icons = APP_ICONS;
   protected readonly searchControl = new FormControl('', { nonNullable: true });
+  private readonly searchSubject = new Subject<string>();
 
   protected movies: MovieCardViewModel[] = [];
   protected readonly pageSize = 8;
@@ -57,16 +59,28 @@ export class MovieListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Setup debounced search
+    this.searchSubject
+      .pipe(debounceTime(300))
+      .subscribe((searchTerm) => {
+        this.loadMovies(searchTerm);
+      });
+
+    // Listen to search control changes
+    this.searchControl.valueChanges.subscribe((value) => {
+      this.searchSubject.next(value);
+    });
+
     this.loadRandomMovies();
   }
 
   /**
    * Carga las películas desde el servicio
    */
-  protected loadMovies(): void {
-    const searchTerm = this.searchControl.value.trim();
+  protected loadMovies(searchTerm?: string): void {
+    const term = (searchTerm ?? this.searchControl.value).trim();
 
-    if (!searchTerm) {
+    if (!term) {
       this.loadRandomMovies();
       return;
     }
@@ -74,7 +88,7 @@ export class MovieListComponent implements OnInit {
     this.state = LoadingState.Loading;
     this.error = null;
 
-    this.moviesService.searchMoviesSafe(searchTerm).subscribe({
+    this.moviesService.searchMoviesFuzzy(term).subscribe({
       next: (result) => {
         this.movies = this.normalizeMoviesToCardView(result.items);
         this.currentPage = 1;
@@ -139,6 +153,10 @@ export class MovieListComponent implements OnInit {
 
   protected closeMovieDetail(): void {
     this.isDetailModalOpen = false;
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubject.complete();
   }
 
   private loadRandomMovies(): void {

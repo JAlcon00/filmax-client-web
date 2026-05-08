@@ -60,7 +60,7 @@ export class MoviesService {
    * @returns Observable con los resultados de búsqueda
    */
   searchMovies(searchTerm: string): Observable<SearchResponse> {
-    const params = new HttpParams().set('q', searchTerm).set('query', searchTerm).set('limit', '20');
+    const params = new HttpParams().set('q', searchTerm).set('query', searchTerm).set('limit', '100');
     return this.http.get<SearchResponse>(`${this.moviesUrl}/search`, { params });
   }
 
@@ -114,6 +114,66 @@ export class MoviesService {
   }
 
   /**
+   * Normaliza un string para búsqueda: minúsculas, sin acentos
+   */
+  private normalizeString(str: string): string {
+    return str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  }
+
+  /**
+   * Calcula distancia de Levenshtein entre dos strings
+   */
+  private levenshteinDistance(a: string, b: string): number {
+    const matrix: number[][] = Array(b.length + 1)
+      .fill(null)
+      .map(() => Array(a.length + 1).fill(0));
+
+    for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+    for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+
+    for (let j = 1; j <= b.length; j++) {
+      for (let i = 1; i <= a.length; i++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        matrix[j][i] = Math.min(
+          matrix[j][i - 1] + 1,
+          matrix[j - 1][i] + 1,
+          matrix[j - 1][i - 1] + cost
+        );
+      }
+    }
+
+    return matrix[b.length][a.length];
+  }
+
+  /**
+   * Calcula similitud fuzzy entre dos strings (Levenshtein + contiene)
+   * Retorna 0-1: 1 = match perfecto, 0 = sin similitud
+   */
+  private fuzzyMatch(query: string, target: string): number {
+    const q = this.normalizeString(query);
+    const t = this.normalizeString(target);
+
+    // Match exacto
+    if (t === q) return 1;
+    // Contiene exacto
+    if (t.includes(q)) return 0.95;
+    // Contiene palabras completas
+    const qWords = q.split(/\s+/).filter(w => w.length > 0);
+    const tWords = t.split(/\s+/).filter(w => w.length > 0);
+    const matchedWords = qWords.filter((w) => tWords.some((tw) => tw.startsWith(w)));
+    if (matchedWords.length > 0) return 0.8 + (matchedWords.length / qWords.length) * 0.15;
+    // Levenshtein simplificado
+    const maxLen = Math.max(q.length, t.length);
+    if (maxLen === 0) return 1;
+    const diff = Math.abs(q.length - t.length) + this.levenshteinDistance(q, t);
+    return Math.max(0, 1 - diff / maxLen);
+  }
+
+  /**
    * Busca películas y devuelve un objeto con estado para distinguir vacío/error
    */
   searchMoviesSafe(searchTerm: string): Observable<SearchResult> {
@@ -124,6 +184,49 @@ export class MoviesService {
           return { items: [], status: 'empty' } as SearchResult;
         }
         return { items, status: 'ok' } as SearchResult;
+      }),
+      catchError((err) => {
+        const message = err?.message ?? 'Error desconocido';
+        return of({ items: [], status: 'error', errorMessage: message } as SearchResult);
+      })
+    );
+  }
+
+  /**
+   * Busca películas con fuzzy matching en cliente
+   * Mejora resultados filtrando por relevancia en múltiples campos
+   * @param searchTerm - Término de búsqueda
+   * @returns Observable con resultados ordenados por relevancia
+   */
+  searchMoviesFuzzy(searchTerm: string): Observable<SearchResult> {
+    return this.searchMoviesNormalized(searchTerm).pipe(
+      map((movies) => {
+        const normalized = movies.map((m) => this.normalizeMovie(m));
+        if (normalized.length === 0) {
+          return { items: [], status: 'empty' } as SearchResult;
+        }
+
+        // Calcula relevancia para cada película
+        const scored = normalized.map((movie) => {
+          const titleScore = this.fuzzyMatch(searchTerm, movie.title) * 3; // Peso en título
+          const descScore = this.fuzzyMatch(searchTerm, movie.description) * 1;
+          const genreScore =
+            movie.genre.reduce((sum, g) => sum + this.fuzzyMatch(searchTerm, g), 0) / movie.genre.length * 2;
+          const relevance = (titleScore + descScore + genreScore) / 6;
+          return { movie, relevance };
+        });
+
+        // Filtra por relevancia mínima (>0.3) y ordena descendentemente
+        const filtered = scored
+          .filter((s) => s.relevance > 0.3)
+          .sort((a, b) => b.relevance - a.relevance)
+          .map((s) => s.movie);
+
+        if (filtered.length === 0) {
+          return { items: [], status: 'empty' } as SearchResult;
+        }
+
+        return { items: filtered, status: 'ok' } as SearchResult;
       }),
       catchError((err) => {
         const message = err?.message ?? 'Error desconocido';
