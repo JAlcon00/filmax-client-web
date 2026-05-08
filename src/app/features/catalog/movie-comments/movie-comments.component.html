@@ -23,6 +23,7 @@
         maxlength="500"
         placeholder="Comparte tu opinión"
         aria-label="Comentario"
+        data-cy="comment-textarea"
       ></textarea>
 
       <div class="comment-composer__meta">
@@ -36,6 +37,7 @@
             [attr.aria-label]="'Calificar ' + star + ' de 5'"
             role="radio"
             (click)="setDraftRating(star)"
+            [attr.data-cy]="'comment-rating-' + star"
           >
             <i [class]="icons.star" aria-hidden="true"></i>
           </button>
@@ -45,7 +47,7 @@
           {{ remainingCharacters }}
         </span>
 
-        <button type="submit" class="comment-composer__send" [disabled]="!canSubmit">
+        <button type="submit" class="comment-composer__send" [disabled]="!canSubmit" data-cy="comment-submit">
           <i [class]="isSubmitting ? icons.arrowRepeat + ' animate-spin' : icons.send" aria-hidden="true"></i>
           <span>{{ isSubmitting ? 'Publicando...' : 'Publicar' }}</span>
         </button>
@@ -119,6 +121,7 @@
                   [attr.aria-label]="'Calificar ' + star + ' de 5'"
                   role="radio"
                   (click)="setEditRating(star)"
+                  [attr.data-cy]="'comment-edit-rating-' + star"
                 >
                   <i [class]="icons.star" aria-hidden="true"></i>
                 </button>
@@ -131,7 +134,7 @@
               <button type="button" class="comment-edit__cancel" aria-label="Cancelar edición" title="Cancelar edición" (click)="cancelEdit()">
                 <i [class]="icons.x" aria-hidden="true"></i>
               </button>
-              <button type="button" class="comment-composer__send" (click)="saveEdit(comment)" [disabled]="editForm.invalid || editRating === 0 || isUpdating">
+              <button type="button" class="comment-composer__send" (click)="saveEdit(comment)" [disabled]="editForm.invalid || editRating === 0 || isUpdating" data-cy="comment-save-edit">
                 <i [class]="isUpdating ? icons.arrowRepeat + ' animate-spin' : icons.save" aria-hidden="true"></i>
                 Guardar
               </button>
@@ -142,7 +145,7 @@
     </article>
   </div>
 
-  <button type="button" class="comments-panel__more" *ngIf="canLoadMore" (click)="loadMore()" [disabled]="isLoadingMore">
+  <button type="button" class="comments-panel__more" *ngIf="canLoadMore" (click)="loadMore()" [disabled]="isLoadingMore" data-cy="comments-load-more">
     <i [class]="isLoadingMore ? icons.arrowRepeat + ' animate-spin' : icons.chevronDown" aria-hidden="true"></i>
     {{ isLoadingMore ? 'Cargando...' : 'Ver más comentarios' }}
   </button>

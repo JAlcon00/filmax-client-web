@@ -17,6 +17,7 @@ import { APP_ICONS } from '../../shared/icons/app-icons';
           [ngClass]="currentView === 'login' ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:text-white'"
           [attr.aria-pressed]="currentView === 'login'"
           (click)="currentView = 'login'"
+          data-cy="auth-login-tab"
         >
           <i [class]="icons.signIn" aria-hidden="true"></i>
           Iniciar sesion
@@ -27,6 +28,7 @@ import { APP_ICONS } from '../../shared/icons/app-icons';
           [ngClass]="currentView === 'register' ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:text-white'"
           [attr.aria-pressed]="currentView === 'register'"
           (click)="currentView = 'register'"
+          data-cy="auth-register-tab"
         >
           <i [class]="icons.userPlus" aria-hidden="true"></i>
           Registrarse
