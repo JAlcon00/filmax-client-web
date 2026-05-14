@@ -8,21 +8,50 @@
     <p class="catalog-hero__text">
       Explora un catalogo visual con tarjetas limpias, favoritos y una experiencia pensada para consumir rapido.
     </p>
-    <form class="catalog-search" (ngSubmit)="onSearch()">
-      <label class="sr-only" for="catalog-search-input">Buscar en catálogo</label>
-      <input
-        id="catalog-search-input"
-        type="search"
-        [formControl]="searchControl"
-        placeholder="Busca una película o serie"
-        class="catalog-search__input"
-        data-cy="catalog-search-input"
-      />
-      <button type="submit" class="catalog-search__button" data-cy="catalog-search-submit">
-        <i [class]="icons.search" aria-hidden="true"></i>
-        Buscar
-      </button>
-    </form>
+    <div class="catalog-search-shell">
+      <form class="catalog-search" (ngSubmit)="onSearch()">
+        <label class="sr-only" for="catalog-search-input">Buscar en catálogo</label>
+        <input
+          id="catalog-search-input"
+          type="search"
+          [formControl]="searchControl"
+          placeholder="Busca una película o serie"
+          class="catalog-search__input"
+          data-cy="catalog-search-input"
+          autocomplete="off"
+          (focus)="onSearchFocus()"
+          (blur)="onSearchBlur()"
+          (keydown)="onSearchKeydown($event)"
+        />
+        <button type="submit" class="catalog-search__button" data-cy="catalog-search-submit">
+          <i [class]="icons.search" aria-hidden="true"></i>
+          Buscar
+        </button>
+      </form>
+
+      <div
+        *ngIf="isSuggestionsVisible && searchSuggestions.length > 0"
+        class="catalog-search__suggestions"
+        role="listbox"
+        aria-label="Sugerencias de búsqueda"
+        data-cy="catalog-suggestions"
+      >
+        <p class="catalog-search__suggestions-label">Sugerencias populares</p>
+        <button
+          type="button"
+          *ngFor="let suggestion of searchSuggestions; let index = index"
+          class="catalog-search__suggestion"
+          [class.is-active]="index === highlightedSuggestionIndex"
+          [attr.aria-selected]="index === highlightedSuggestionIndex"
+          role="option"
+          [attr.data-cy]="'catalog-suggestion-' + index"
+          (mousedown)="selectSuggestion(suggestion, $event)"
+        >
+          <i [class]="icons.search" aria-hidden="true"></i>
+          <span>{{ suggestion }}</span>
+        </button>
+      </div>
+    </div>
   </header>
 
   <!-- Loading State -->
