@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -129,6 +129,8 @@ export class RegisterComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
 
+  @Output() registerSuccess = new EventEmitter<void>();
+
   protected readonly icons = APP_ICONS;
   protected readonly registerForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -159,6 +161,10 @@ export class RegisterComponent {
         next: (response) => {
           this.successMessage = response.message ?? 'Registro exitoso. Ya puedes iniciar sesion.';
           this.registerForm.reset();
+          
+          setTimeout(() => {
+            this.registerSuccess.emit();
+          }, 1500);
         },
         error: (error: unknown) => {
           this.errorMessage = this.resolveErrorMessage(error);
