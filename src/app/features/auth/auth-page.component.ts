@@ -36,7 +36,7 @@ import { APP_ICONS } from '../../shared/icons/app-icons';
       </div>
 
       <app-login *ngIf="currentView === 'login'"></app-login>
-      <app-register *ngIf="currentView === 'register'"></app-register>
+      <app-register *ngIf="currentView === 'register'" (registerSuccess)="currentView = 'login'"></app-register>
     </section>
   `,
 })
