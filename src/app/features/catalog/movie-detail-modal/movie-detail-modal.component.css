@@ -179,6 +179,14 @@
     color: rgba(255, 255, 255, 0.95);
     font-size: 1rem;
   }
+
+  .btn {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
 }
 
 /* Bootstrap Button Styles Customized */
