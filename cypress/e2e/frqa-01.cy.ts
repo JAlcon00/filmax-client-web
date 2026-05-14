@@ -267,6 +267,11 @@ describe('FRQA-01 - Cypress E2E de toda la aplicación', () => {
     cy.get('[data-cy="nav-logout"]').should('be.visible');
 
     cy.get('[data-cy="catalog-search-input"]').clear().type('Batman').should('have.value', 'Batman');
+    cy.get('[data-cy="catalog-suggestions"]').should('be.visible');
+    cy.contains('[data-cy="catalog-suggestions"] [data-cy^="catalog-suggestion-"]', 'Batman')
+      .should('be.visible')
+      .click();
+
     cy.wait('@movieSearch')
       .its('request.url')
       .should('match', /Batman/i);

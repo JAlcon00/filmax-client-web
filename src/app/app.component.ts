@@ -13,12 +13,18 @@ import { APP_ICONS } from './shared/icons/app-icons';
     <div class="min-h-screen bg-slate-950 text-white">
       <header class="sticky top-0 z-10 border-b border-white/10 bg-slate-950/90 backdrop-blur">
         <div class="mx-auto flex w-full max-w-6xl items-center px-4 py-4 sm:px-6 lg:px-8" [class.justify-center]="isAuthRoute" [class.justify-between]="!isAuthRoute">
-          <a routerLink="/catalog" class="inline-flex items-center gap-2 text-lg font-bold tracking-wide text-cyan-300" aria-label="Ir al catálogo de Filmax" data-cy="brand-link">
+          <button
+            type="button"
+            class="inline-flex items-center gap-2 text-lg font-bold tracking-wide text-cyan-300 bg-transparent border-none cursor-pointer"
+            aria-label="Recargar página"
+            data-cy="brand-link"
+            (click)="refreshPage()"
+          >
             <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 text-base" aria-hidden="true">
               <i [class]="icons.logo"></i>
             </span>
             <span>FILMAX</span>
-          </a>
+          </button>
 
           <nav *ngIf="!isAuthRoute" class="flex items-center gap-2">
             <a
@@ -94,5 +100,9 @@ export class AppComponent {
   protected logout(): void {
     this.authService.clearToken();
     this.router.navigateByUrl('/auth');
+  }
+
+  protected refreshPage(): void {
+    location.reload();
   }
 }
